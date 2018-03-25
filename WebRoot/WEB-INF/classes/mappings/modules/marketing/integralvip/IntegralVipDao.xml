@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.marketing.integralvip.dao.IntegralVipDao">
+    
+	<sql id="integralVipColumns">
+		a.id AS "id",
+		a."OPENID" AS "openid",
+		a."LUCKY_DRAW" AS "luckyDraw",
+		a."PHONE" AS "phone",
+		a.WHRAT AS "wheat",
+		a.RICE AS "rice",
+		a.CORN AS "corn",
+		a.SORGHUM AS "sorghum",
+		a.GLUTINOUSRICE AS "glutinousrice",
+		a.ALL_INTEGRAL AS "allIntegral",
+		a.LUCKY_NUMBER AS "luckyNumber",
+		a."REMARKS" AS "remarks",
+		a.CREATE_TIME AS "createTime",
+		a.UPDATE_TIME AS "updateTime"
+	</sql>
+	
+	<sql id="integralVipJoins">
+	</sql>
+    
+	<select id="get" resultType="IntegralVip">
+		SELECT 
+			<include refid="integralVipColumns"/>
+		FROM integral_vip a
+		<include refid="integralVipJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="IntegralVip">
+		SELECT 
+			<include refid="integralVipColumns"/>
+		FROM integral_vip a
+		<include refid="integralVipJoins"/>
+		<where>
+		<!--查询分数  -->
+			<if test="smallFen != null and smallFen != ''">
+				AND a.ALL_INTEGRAL &gt;= #{smallFen}
+			</if>
+			<if test="bigFen != null and bigFen != ''">
+				AND a.ALL_INTEGRAL &lt;= #{bigFen}
+			</if>
+			<if test="luckyDraw != null and luckyDraw != ''">
+				AND a.lucky_draw LIKE 
+					<if test="dbName == 'oracle'">'%'||#{luckyDraw}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{luckyDraw}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{luckyDraw},'%')</if>
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{phone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{phone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{phone},'%')</if>
+			</if>
+			<if test="luckyNumber != null and luckyNumber != ''">
+				AND a.lucky_number = #{luckyNumber}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="IntegralVip">
+		SELECT 
+			<include refid="integralVipColumns"/>
+		FROM integral_vip a
+		<include refid="integralVipJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO integral_vip(
+			id,
+			openid,
+			lucky_draw,
+			phone,
+			wheat,
+			rice,
+			corn,
+			sorghum,
+			glutinousrice,
+			all_integral,
+			lucky_number,
+			remarks,
+			create_time,
+			update_time
+		) VALUES (
+			#{id},
+			#{openid},
+			#{luckyDraw},
+			#{phone},
+			#{wheat},
+			#{rice},
+			#{corn},
+			#{sorghum},
+			#{glutinousrice},
+			#{allIntegral},
+			#{luckyNumber},
+			#{remarks},
+			#{createTime},
+			#{updateTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE integral_vip SET 	
+			lucky_draw = #{luckyDraw},
+			phone = #{phone},
+			wheat = #{wheat},
+			rice = #{rice},
+			corn = #{corn},
+			sorghum = #{sorghum},
+			glutinousrice = #{glutinousrice},
+			all_integral = #{allIntegral},
+			lucky_number = #{luckyNumber},
+			remarks = #{remarks},
+			create_time = #{createTime},
+			update_time = #{updateTime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM integral_vip
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

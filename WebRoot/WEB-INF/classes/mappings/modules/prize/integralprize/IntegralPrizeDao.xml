@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.prize.integralprize.dao.IntegralPrizeDao">
+    
+	<sql id="turntablePrizeColumns">
+		a.id AS "id",
+		d.name AS "name",
+		a.winning_way AS "winningWay",
+		a.prize_name AS "prizeName",
+		a.winning_time AS "winningTime",
+		a.openid AS "openid",
+		a.prize_status AS "prizeStatus",
+		a.prize_type AS "prizeType"
+		
+	</sql>
+	
+	<sql id="turntablePrizeJoins">
+		LEFT JOIN PRODUCT_INFO d ON d.id = a.prize_name
+	</sql>
+    
+	<select id="get" resultType="IntegralPrize">
+		SELECT 
+			<include refid="turntablePrizeColumns"/>
+		FROM winning_delivery a
+		<include refid="turntablePrizeJoins"/>
+		WHERE a.id = #{id} AND a.winning_way = '3'
+	</select>
+	
+	<select id="findList" resultType="IntegralPrize">
+		SELECT 
+			<include refid="turntablePrizeColumns"/>
+		FROM winning_delivery a
+		<include refid="turntablePrizeJoins"/>
+		<where>
+			1 = 1 
+			<if test="prizeName != null and prizeName != ''">
+				AND d.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{prizeName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{prizeName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{prizeName},'%')</if>
+			</if>
+			<if test="prizeType != null and prizeType != ''">
+				AND a.prize_type = #{prizeType}
+			</if>
+			AND a.winning_way = '3'
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="IntegralPrize">
+		SELECT 
+			<include refid="turntablePrizeColumns"/>
+		FROM winning_delivery a
+		<include refid="turntablePrizeJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO winning_delivery(
+			id,
+			name,
+			winning_way,
+			prize_name,
+			express_number,
+			express,
+			collect_address,
+			collect_user,
+			collect_phone,
+			delivery_time,
+			winning_time,
+			distribution_status,
+			openid,
+			grain_gram,
+			prize_status,
+			prize_type,
+			code_id,
+			code,
+			cardid,
+			address_status,
+			activity_id
+		) VALUES (
+			#{id},
+			#{name},
+			#{winningWay},
+			#{prizeName},
+			#{expressNumber},
+			#{express},
+			#{collectAddress},
+			#{collectUser},
+			#{collectPhone},
+			#{deliveryTime},
+			#{winningTime},
+			#{distributionStatus},
+			#{openid},
+			#{grainGram},
+			#{prizeStatus},
+			#{prizeType},
+			#{codeId},
+			#{code},
+			#{cardid},
+			#{addressStatus},
+			#{activityId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE winning_delivery SET 	
+			name = #{name},
+			winning_way = #{winningWay},
+			prize_name = #{prizeName},
+			express_number = #{expressNumber},
+			express = #{express},
+			collect_address = #{collectAddress},
+			collect_user = #{collectUser},
+			collect_phone = #{collectPhone},
+			delivery_time = #{deliveryTime},
+			winning_time = #{winningTime},
+			distribution_status = #{distributionStatus},
+			openid = #{openid},
+			grain_gram = #{grainGram},
+			prize_status = #{prizeStatus},
+			prize_type = #{prizeType},
+			code_id = #{codeId},
+			code = #{code},
+			cardid = #{cardid},
+			address_status = #{addressStatus},
+			activity_id = #{activityId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM winning_delivery
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

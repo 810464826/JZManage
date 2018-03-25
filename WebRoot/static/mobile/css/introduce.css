@@ -1,0 +1,148 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+li{
+	list-style-type: none;
+}
+#top{
+	width: 100%;
+	height: 260px;
+	background: url(../img/introduce.png) center center;
+	background-repeat:no-repeat ;
+	background-size:cover;
+}
+#topMenu{
+	width: 100%;
+	height: 60px;
+	background: rgba(0,0,0,0.2);
+}
+#topMenu td{
+	height: 60px;
+	text-align: center;
+	color: white;
+	line-height: 60px;
+}
+#topMenu td:first-of-type{
+	width: 25%;
+	font-family: "微软雅黑";
+	font-size: 18px;
+}
+#topMenu td:nth-of-type(2){
+	width: 50%;
+	font-family: "楷体";
+	font-size: 20px;
+}
+#topMenu td:last-of-type{
+	width: 25%;
+	text-align: right;
+}
+#topMenu td:last-of-type>img{
+	width: 20px;
+	height: 15px;
+	vertical-align: middle;
+	margin-right: 20px;
+}
+#top>p{
+	width: 100%;
+	height: 200px;
+	background: rgba(0,0,0,0.4);
+}
+#top>p>img{
+	width: 120px;
+	height: 120px;
+	position: absolute;
+	top: 100px;
+	left: 50%;
+	margin-left: -60px;
+}
+#middle{
+	width: 100%;
+}
+#middle>p{
+	width: 90%;
+	margin: auto;
+	font-size: 14px;
+	font-family: "楷体";
+	line-height:30px ;
+	letter-spacing: 2px;
+}
+.pClass{
+	text-align:center;
+	font-weight: 600;
+	font-size: 16px;
+}
+#middle>p:first-of-type{
+	text-align:center;
+	font-weight: 600;
+	font-size: 16px;
+	margin-top:10px;
+}
+.sideslip{
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	width: 80%;
+	height: 100%;
+	margin-right: -80%;
+	transition: 0.7s;
+	background: rgba(5,6,8,0.7);
+}
+.show{
+	margin-right: 0;
+}
+#sideslip>span{
+	display: inline-block;
+	width: 100%;
+	height: 60px;
+	text-align: right;
+	line-height: 60px;
+}
+#sideslip>span>img{
+	width: 15px;
+	height: 15px;
+	vertical-align: middle;
+	margin-right: 22px;
+}
+#sideslip>ul{
+	width: 100%;
+	height:612px ;
+}
+#sideslip>ul>li{
+	color: white;
+	width: 90%;
+	height: 50px;
+	font-family: "楷体";
+	font-size: 18px;
+	line-height: 50px;
+	border-bottom: 1px solid #565252;
+	margin: auto;
+}
+#sideslip>ul>li>a{
+	color: #c2c2c2;
+	text-decoration: none;
+}
+#sideslip>ul>p{
+	width: 60%;
+	height: 32px;
+	line-height: 32px;
+	font-family:"楷体" ;
+	font-size: 16px;
+	margin: auto;
+}
+#sideslip>ul>p:first-of-type a{
+	color:#ffd02e ;
+}
+#sideslip>ul>p>a{
+	color: #c2c2c2;
+	text-decoration: none;
+}
+#sideslip>ul>li:hover{
+	color: white;
+}
+#sideslip>ul>li>a:hover{
+	color: white;
+}
+#sideslip p>a:hover{
+	color:#ffd02e ;
+}

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.prize.turntableraffle.dao.TurntableRaffleDao">
+    
+	<sql id="turntableRaffleColumns">
+		a.id AS "id",
+		a.prize_name AS "prizeName",
+		a.prize_number AS "prizeNumber",
+		a.surplus_number AS "surplusNumber",
+		a.prize_type AS "prizeType",
+		a.winning_number AS "winningNumber",
+		a.winning_probability AS "winningProbability",
+		b.NAME AS "wxCardId",
+		a.create_date AS "createDate",
+		a.activity_id As "activityId",
+		a.newProbability AS "newProbability",
+		u6.name AS "name"
+	</sql>
+	
+	<sql id="turntableRaffleJoins">
+		LEFT JOIN WX_CARD b on a.wx_card_id = b.id 
+		LEFT JOIN PRODUCT_INFO u6 ON u6.id = a.prize_name
+	</sql>
+    
+	<select id="get" resultType="TurntableRaffle">
+		SELECT 
+			<include refid="turntableRaffleColumns"/>
+		FROM turntable_raffle a
+		<include refid="turntableRaffleJoins"/>
+		WHERE a.id = #{id} AND TURNTABLE = '0'
+	</select>
+	
+	<select id="findList" resultType="TurntableRaffle">
+		SELECT 
+			<include refid="turntableRaffleColumns"/>
+		FROM turntable_raffle a
+		<include refid="turntableRaffleJoins"/>
+		<where>
+			
+			<if test="prizeName != null and prizeName != ''">
+				AND u6.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{prizeName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{prizeName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{prizeName},'%')</if>
+			</if>
+			AND TURNTABLE = '0'
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="TurntableRaffle">
+		SELECT 
+			<include refid="turntableRaffleColumns"/>
+		FROM turntable_raffle a
+		<include refid="turntableRaffleJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="TurntableRaffleList" resultType="TurntableRaffle">
+		SELECT 
+			<include refid="turntableRaffleColumns"/>
+		FROM turntable_raffle a
+		<include refid="turntableRaffleJoins"/>
+		<where>
+			a.ACTIVITY_ID = #{id} ORDER BY a.create_date DESC
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO turntable_raffle(
+			id,
+			prize_name,
+			prize_number,
+			surplus_number,
+			prize_type,
+			winning_number,
+			winning_probability,
+			wx_card_id,
+			create_date,
+			activity_id,
+			newProbability,
+			turntable
+		) VALUES (
+			#{id},
+			#{prizeName},
+			#{prizeNumber},
+			#{surplusNumber},
+			#{prizeType},
+			#{winningNumber},
+			#{winningProbability},
+			#{wxCardId},
+			#{createDate},
+			#{activityId},
+			#{newProbability},
+			#{turntable}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE turntable_raffle SET 	
+			prize_name = #{prizeName},
+			prize_number = #{prizeNumber},
+			surplus_number = #{surplusNumber},
+			prize_type = #{prizeType},
+			winning_number = #{winningNumber},
+			winning_probability = #{winningProbability},
+			wx_card_id = #{wxCardId},
+			activity_id	= #{activityId},
+			newProbability = #{newProbability}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM turntable_raffle
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

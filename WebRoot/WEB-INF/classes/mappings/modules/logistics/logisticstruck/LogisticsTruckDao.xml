@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.logistics.logisticstruck.dao.LogisticsTruckDao">
+    
+	<sql id="logisticsTruckColumns">
+		a.id AS "id",
+		a.car_number AS "carNumber",
+		a.load AS "load",
+		a.create_date AS "createDate",
+		a.car_name AS "carName",
+		a.firm_id AS "firmId"
+	</sql>
+	
+	<sql id="logisticsTruckJoins">
+	</sql>
+    
+	<select id="get" resultType="LogisticsTruck">
+		SELECT 
+			<include refid="logisticsTruckColumns"/>
+		FROM logistics_truck a
+		<include refid="logisticsTruckJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LogisticsTruck">
+		SELECT 
+			<include refid="logisticsTruckColumns"/>
+		FROM logistics_truck a
+		<include refid="logisticsTruckJoins"/>
+		<where>
+			
+			<if test="carNumber != null and carNumber != ''">
+				AND a.car_number LIKE 
+					<if test="dbName == 'oracle'">'%'||#{carNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{carNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{carNumber},'%')</if>
+			</if>
+			<if test="firmId != null and firmId != ''">
+				AND a.firm_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firmId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firmId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firmId},'%')</if>
+			</if>
+			<if test="carName != null and carName != ''">
+				AND a.car_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{carName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{carName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{carName},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LogisticsTruck">
+		SELECT 
+			<include refid="logisticsTruckColumns"/>
+		FROM logistics_truck a
+		<include refid="logisticsTruckJoins"/>
+		<where>
+			<if test="firmId != null and firmId != ''">
+				AND a.firm_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{firmId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{firmId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{firmId},'%')</if>
+			</if>
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO logistics_truck(
+			id,
+			car_number,
+			load,
+			create_date,
+			car_name,
+			firm_id
+		) VALUES (
+			#{id},
+			#{carNumber},
+			#{load},
+			#{createDate},
+			#{carName},
+			#{firmId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE logistics_truck SET 	
+			car_number = #{carNumber},
+			load = #{load},
+			car_name = #{carName}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM logistics_truck
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.productintegral.dao.VolumeDao">
+    
+	<select id="getAllVolume" resultType="Volume">
+		SELECT a.id as "volumeId" ,a.capacity as "volume" FROM CODE_CAPACITY a
+	</select>
+</mapper>

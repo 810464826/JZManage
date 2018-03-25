@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.accountsapply.dao.AccountsapplyDao">
+    
+	<sql id="accountsapplyColumns">
+		a.id AS "id",
+		a.applyoffice AS "applyoffice",
+		a.applyusername AS "applyusername",
+		a.handleusername AS "handleusername",
+		a.handleoffice AS "handleoffice",
+		a.state AS "state",
+		a.applytime AS "applytime",
+		a.handletime AS "handletime",
+		a.remarks AS "remarks",
+		a.applyusercode AS "applyusercode",
+		a.handleusercode AS "handleusercode"
+	</sql>
+	
+	<sql id="accountsapplyJoins">
+	</sql>
+    
+	<select id="get" resultType="Accountsapply">
+		SELECT 
+			<include refid="accountsapplyColumns"/>
+		FROM accountsapply a
+		<include refid="accountsapplyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Accountsapply">
+		SELECT 
+			<include refid="accountsapplyColumns"/>
+		FROM accountsapply a
+		<include refid="accountsapplyJoins"/>
+		<where>
+			<if test="applyusercode != null and applyusercode != ''">
+				AND a.applyusercode = #{applyusercode}
+			</if>
+			<if test="applyoffice != null and applyoffice != ''">
+				AND a.applyoffice = #{applyoffice}
+			</if>
+			<if test="applyusername != null and applyusername != ''">
+				AND a.applyusername = #{applyusername}
+			</if>
+			<if test="handleusername != null and handleusername != ''">
+				AND a.handleusername = #{handleusername}
+			</if>
+			<if test="handleoffice != null and handleoffice != ''">
+				AND a.handleoffice = #{handleoffice}
+			</if>
+			<if test="state != null and state != ''">
+				AND a.state = #{state}
+			</if>
+			<if test="applytime != null and applytime != ''">
+				AND a.applytime = #{applytime}
+			</if>
+			<if test="handletime != null and handletime != ''">
+				AND a.handletime = #{handletime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Accountsapply">
+		SELECT 
+			<include refid="accountsapplyColumns"/>
+		FROM accountsapply a
+		<include refid="accountsapplyJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO accountsapply(
+			id,
+			applyoffice,
+			applyusername,
+			handleusername,
+			handleoffice,
+			state,
+			applytime,
+			handletime,
+			remarks,
+			applyusercode,
+			handleusercode
+		) VALUES (
+			#{id},
+			#{applyoffice},
+			#{applyusername},
+			#{handleusername},
+			#{handleoffice},
+			#{state},
+			#{applytime},
+			#{handletime},
+			#{remarks},
+			#{applyusercode},
+			#{handleusercode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE accountsapply SET 	
+			applyoffice = #{applyoffice},
+			applyusername = #{applyusername},
+			handleusername = #{handleusername},
+			handleoffice = #{handleoffice},
+			state = #{state},
+			applytime = #{applytime},
+			handletime = #{handletime},
+			remarks = #{remarks},
+			applyusercode=#{applyusercode},
+			handleusercode=#{handleusercode}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM accountsapply
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

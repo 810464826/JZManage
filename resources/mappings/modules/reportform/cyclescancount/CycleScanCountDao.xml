@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.reportform.cyclescancount.dao.CycleScanCountDao">
+    
+	<sql id="cycleScanCountColumns">
+		a.id AS "id",
+		b.LUCKY_DRAW AS "userName",
+		b.PHONE AS "phone",
+		a.province AS "province",
+		a.city AS "city",
+		a.scan_number AS "scanNumber",
+		a.scan_time AS "scanTime",
+		a.openid AS "openid",
+		a.activity_prizes_name AS "activityPrizesName",
+		a.activity_prizes_address AS "activityPrizesAddress",
+		a.activity_prizes_id AS "activityPrizesId",
+		a.activity_id AS "activityId",
+		a.out_provinces AS "outProvinces",
+		a.codeid AS "codeid",
+		a.country AS "country",
+		a.district AS "district",
+		a.road AS "road",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	
+	<sql id="cycleScanCountJoins">
+	LEFT JOIN INTEGRAL_VIP b ON b.openid = a.openid
+	</sql>
+    
+	<select id="get" resultType="CycleScanCount">
+		SELECT 
+			<include refid="cycleScanCountColumns"/>
+		FROM provinces_count a
+		<include refid="cycleScanCountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CycleScanCount">
+		SELECT 
+			<include refid="cycleScanCountColumns"/>
+		FROM provinces_count a
+		<include refid="cycleScanCountJoins"/>
+		<where>
+			<!-- 1=1 
+			<if test="scanNumber != null and scanNumber != ''">
+				AND a.scan_number = #{scanNumber}
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CycleScanCount">
+		SELECT 
+			<include refid="cycleScanCountColumns"/>
+		FROM provinces_count a
+		<include refid="cycleScanCountJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO provinces_count(
+			id,
+			user_name,
+			phone,
+			province,
+			city,
+			scan_number,
+			scan_time,
+			openid,
+			activity_prizes_name,
+			activity_prizes_address,
+			activity_prizes_id,
+			activity_id,
+			out_provinces,
+			codeid,
+			country,
+			district,
+			road,
+			longitude,
+			latitude
+		) VALUES (
+			#{id},
+			#{userName},
+			#{phone},
+			#{province},
+			#{city},
+			#{scanNumber},
+			#{scanTime},
+			#{openid},
+			#{activityPrizesName},
+			#{activityPrizesAddress},
+			#{activityPrizesId},
+			#{activityId},
+			#{outProvinces},
+			#{codeid},
+			#{country},
+			#{district},
+			#{road},
+			#{longitude},
+			#{latitude}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE provinces_count SET 	
+			user_name = #{userName},
+			phone = #{phone},
+			province = #{province},
+			city = #{city},
+			scan_number = #{scanNumber},
+			scan_time = #{scanTime},
+			openid = #{openid},
+			activity_prizes_name = #{activityPrizesName},
+			activity_prizes_address = #{activityPrizesAddress},
+			activity_prizes_id = #{activityPrizesId},
+			activity_id = #{activityId},
+			out_provinces = #{outProvinces},
+			codeid = #{codeid},
+			country = #{country},
+			district = #{district},
+			road = #{road},
+			longitude = #{longitude},
+			latitude = #{latitude}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM provinces_count
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

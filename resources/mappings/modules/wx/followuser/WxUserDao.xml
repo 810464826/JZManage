@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wx.followuser.dao.WxUserDao">
+    
+	<sql id="wxUserColumns">
+		a.id AS "id",
+		a.nickname AS "nickname",
+		a.sex AS "sex",
+		a.country AS "country",
+		a.province AS "province",
+		a.city AS "city",
+		a.headimgurl AS "headimgurl",
+		a.openid AS "openid",
+		a.phoneNumber AS "phoneNumber",
+		a.follotime AS "follotime"
+	</sql>
+	
+	<sql id="wxUserJoins">
+	</sql>
+    
+	<select id="get" resultType="WxUser">
+		SELECT 
+			<include refid="wxUserColumns"/>
+		FROM wx_user a
+		<include refid="wxUserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WxUser">
+		SELECT 
+			<include refid="wxUserColumns"/>
+		FROM wx_user a
+		<include refid="wxUserJoins"/>
+		<where>
+			
+			<if test="nickname != null and nickname != ''">
+				AND a.nickname LIKE 
+					<if test="dbName == 'oracle'">'%'||#{nickname}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{nickname}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{nickname},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxUser">
+		SELECT 
+			<include refid="wxUserColumns"/>
+		FROM wx_user a
+		<include refid="wxUserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<select id="getUserByOpenid" resultType="WxUser">
+		SELECT 
+			<include refid="wxUserColumns"/>
+		FROM wx_user a
+		<include refid="wxUserJoins"/>
+		WHERE a.openid = #{openid}
+	</select>
+	
+	
+	<insert id="saveByOpenid">
+		INSERT INTO wx_user(
+			id,
+			openid
+			) VALUES (
+			#{id},
+			#{openid}
+			)
+	</insert>
+	
+	<insert id="insert">
+		INSERT INTO wx_user(
+			id,
+			nickname,
+			sex,
+			country,
+			province,
+			city,
+			headimgurl,
+			openid,
+			phoneNumber,
+			follotime
+		) VALUES (
+			#{id},
+			#{nickname},
+			#{sex},
+			#{country},
+			#{province},
+			#{city},
+			#{headimgurl},
+			#{openid},
+			#{phoneNumber},
+			#{follotime}
+		)
+	</insert>
+	
+	<update id="update" parameterType="com.thinkgem.jeesite.modules.wx.followuser.entity.WxUser">
+		UPDATE wx_user SET 	
+			nickname = #{nickname},
+			sex = #{sex},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			headimgurl = #{headimgurl},
+			openid = #{openid},
+			phoneNumber = #{phoneNumber},
+			follotime = #{follotime}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wx_user
+		WHERE id = #{id}
+	</update>
+	
+	<update id="empty">
+		DELETE FROM wx_user
+	</update>
+	
+	<update id="upUser" parameterType="com.thinkgem.jeesite.modules.wx.followuser.entity.WxUser">
+		UPDATE wx_user SET 	
+			nickname = #{nickname},
+			sex = #{sex},
+			country = #{country},
+			province = #{province},
+			city = #{city},
+			headimgurl = #{headimgurl},
+			openid = #{openid},
+			phoneNumber = #{phoneNumber},
+			follotime = #{follotime}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

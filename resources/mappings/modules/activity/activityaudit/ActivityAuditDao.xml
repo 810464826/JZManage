@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activity.activityaudit.dao.ActivityAuditDao">
+    
+	<sql id="activityAuditColumns">
+		a.id AS "id",
+		a.activity_name AS "activityName",
+		a.activity_address AS "activityAddress",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		u6.name AS "applyUser",
+		u7.name AS "examineUser",
+		a.state AS "state"
+	</sql>
+	
+	<sql id="activityAuditJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.apply_user
+		LEFT JOIN sys_user u7 ON u7.id = a.examine_user
+	</sql>
+    
+	<select id="get" resultType="ActivityAudit">
+		SELECT 
+			<include refid="activityAuditColumns"/>
+		FROM activity_report a
+		<include refid="activityAuditJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getAllNoMe" resultType="ActivityAudit">
+		SELECT 
+			<include refid="activityAuditColumns"/>
+		FROM activity_report a
+		<include refid="activityAuditJoins"/>
+		WHERE u6.name != #{userName}
+	</select>
+	
+	<select id="findList" resultType="ActivityAudit">
+		SELECT 
+			<include refid="activityAuditColumns"/>
+		FROM activity_report a
+		<include refid="activityAuditJoins"/>
+		<where>
+			1=1 
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE
+				'%'||#{activityName}||'%'
+			</if>
+			<if test="state != null and state != ''">
+				AND a.state = #{state}
+			</if>
+			<if test="activityAddress != null and activityAddress != ''">
+				AND a.activity_address LIKE
+				'%'||#{activityAddress}||'%'
+			</if>
+			<if test="applyUser != null and applyUser != ''">
+				AND u6.name LIKE
+				'%'||#{applyUser}||'%'
+			</if>
+			ORDER BY a.create_time DESC
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ActivityAudit">
+		SELECT 
+			<include refid="activityAuditColumns"/>
+		FROM activity_report a
+		<include refid="activityAuditJoins"/>
+		<where>
+			1=1
+			ORDER BY a.create_time DESC	
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO activity_report(
+			id,
+			activity_name,
+			activity_address,
+			create_time,
+			update_time,
+			apply_user,
+			examine_user,
+			state
+		) VALUES (
+			#{id},
+			#{activityName},
+			#{activityAddress},
+			#{createTime},
+			#{updateTime},
+			#{applyUser},
+			#{examineUser},
+			#{state}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE activity_report SET 	
+			activity_name = #{activityName},
+			activity_address = #{activityAddress},
+			create_time = #{createTime},
+			update_time = #{updateTime},
+			apply_user = #{applyUser}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateState">
+		UPDATE activity_report SET 	
+			STATE = #{state},
+			REMARKS = #{remarks},
+			EXAMINE_USER = #{examineUser}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM activity_report
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cancel.remotecancel.dao.RemoteCancelDao">
+    
+	<sql id="remoteCancelColumns">
+		a.id AS "id",
+		a.activity_name AS "activityName",
+		b.name AS "activityPrizesAddress",
+		a.activity_prizes_id AS "activityPrizesId",
+		a.activity_id AS "activityId",
+		a.cancel_user AS "cancelUser",
+		c.name AS "cancelAddress",
+		a.goods_number AS "goodsNumber",
+		a.CREATE_TIME AS "createTime",
+		a.cancel_number AS "cancelNumber",
+		a.prize_name AS "prizeName",
+		d.name AS "activityPrizesOffice",
+		e.name AS "cancelOffice",
+		a.cancel_openid AS "cancelOpenid",
+		a.check_state AS "checkState",
+		a.check_user AS "checkUser",
+		a.CANCELUSERNAME AS "cancelUserName",
+		a.CANCELUSERPHONE AS "cancelUserPhone"
+	</sql>
+	
+	<sql id="remoteCancelJoins">
+	LEFT JOIN SYS_AREA b ON b.id = a.activity_prizes_address 
+	LEFT JOIN SYS_AREA c ON c.id = a.cancel_address
+	LEFT JOIN SYS_OFFICE d ON d.id = a.activity_prizes_office
+	LEFT JOIN SYS_OFFICE e ON e.id = a.cancel_office
+	LEFT JOIN PRODUCT_INFO f ON f.id = a.prize_name
+	</sql>
+    
+	<select id="get" resultType="RemoteCancel">
+		SELECT 
+			<include refid="remoteCancelColumns"/>
+		FROM remote_cancel a
+		<include refid="remoteCancelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RemoteCancel">
+		SELECT 
+			<include refid="remoteCancelColumns"/>
+		FROM remote_cancel a
+		<include refid="remoteCancelJoins"/>
+		<where>
+			<if test="startTime != null and startTime != ''">
+				AND a.CREATE_TIME &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.CREATE_TIME &lt;= #{endTime}
+			</if>
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE '%'||#{activityName}||'%' 
+			</if>
+			<if test="goodsNumber != null and goodsNumber != ''">
+				AND a.goods_number LIKE'%'|| #{goodsNumber}||'%' 
+			</if>
+			<if test="cancelOffice != null and cancelOffice != ''">
+				AND e.name LIKE '%'||#{cancelOffice}||'%' 
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RemoteCancel">
+		SELECT 
+			<include refid="remoteCancelColumns"/>
+		FROM remote_cancel a
+		<include refid="remoteCancelJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO remote_cancel(
+			id,
+			activity_name,
+			activity_prizes_address,
+			activity_prizes_id,
+			activity_id,
+			cancel_user,
+			cancel_address,
+			goods_number,
+			create_date,
+			cancel_number,
+			prize_name,
+			activity_prizes_office,
+			cancel_office,
+			cancel_openid,
+			check_state,
+			check_user,
+			cancelusername,
+			canceluserphone
+		) VALUES (
+			#{id},
+			#{activityName},
+			#{activityPrizesAddress},
+			#{activityPrizesId},
+			#{activityId},
+			#{cancelUser},
+			#{cancelAddress},
+			#{goodsNumber},
+			#{createDate},
+			#{cancelNumber},
+			#{prizeName},
+			#{activityPrizesOffice},
+			#{cancelOffice},
+			#{cancelOpenid},
+			#{checkState},
+			#{checkUser},
+			#{cancelusername},
+			#{canceluserphone}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE remote_cancel SET 	
+			activity_name = #{activityName},
+			activity_prizes_address = #{activityPrizesAddress},
+			activity_prizes_id = #{activityPrizesId},
+			activity_id = #{activityId},
+			cancel_user = #{cancelUser},
+			cancel_address = #{cancelAddress},
+			goods_number = #{goodsNumber},
+			cancel_number = #{cancelNumber},
+			prize_name = #{prizeName},
+			activity_prizes_office = #{activityPrizesOffice},
+			cancel_office = #{cancelOffice},
+			cancel_openid = #{cancelOpenid},
+			check_state = #{checkState},
+			check_user = #{checkUser},
+			cancelusername =#{cancelusername},
+			canceluserphone=#{canceluserphone}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM remote_cancel
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

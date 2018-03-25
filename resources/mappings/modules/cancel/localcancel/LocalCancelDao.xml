@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.cancel.localcancel.dao.LocalCancelDao">
+    
+	<sql id="localCancelColumns">
+		a.id AS "id",
+		a.activity_name AS "activityName",
+		b.name AS "activityPrizesAddress",
+		activity_prizes_id AS "activityPrizesId",
+		a.activity_id AS "activityId",
+		a.cancel_user AS "cancelUser",
+		c.name AS "cancelAddress",
+		f.name AS "prizeName",
+		f.id AS "prizeId",
+		a.cancel_number AS "cancelNumber",
+		d.name AS "activityPrizesOffice",
+		e.name AS "cancelOffice",
+		a.CREATE_DATE AS "createTime", 
+		a.cancel_openid AS "cancelOpenid",
+		a.check_state AS "checkState",
+		a.check_user AS "checkUser",
+		g.CANCEL_LOGIN AS "existence",
+		a.ACTIVITY_ADDRESS AS "activityAddress",
+		a.CANCEL_ADDRESSNAME AS "cancelAddressName",
+		a.CANCELUSERNAME AS "cancelUserName",
+		a.CANCELUSERPHONE AS "cancelUserPhone"
+	</sql>
+	
+	<sql id="localCancelJoins">
+	LEFT JOIN SYS_AREA b ON b.id = a.activity_prizes_address 
+	LEFT JOIN SYS_AREA c ON c.id = a.cancel_address
+	LEFT JOIN SYS_OFFICE d ON d.id = a.activity_prizes_office
+	<!-- LEFT JOIN SYS_OFFICE m ON m.id = a.activity_prizes_id -->
+	LEFT JOIN SYS_OFFICE e ON e.id = a.cancel_office
+	LEFT JOIN PRODUCT_INFO f ON f.id = a.prize_name
+	LEFT JOIN CANCEL_USER g ON g.SYS_USER_ID = a.cancel_user
+	</sql>
+    
+	<select id="get" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		<where>
+			1=1 
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityName},'%')</if>
+			</if>
+			<if test="activityPrizesId != null and activityPrizesId != ''">
+				AND a.activity_prizes_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesId},'%')</if>
+			</if>
+			<if test="activityPrizesAddress != null and activityPrizesAddress != ''">
+				AND b.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesAddress}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesAddress}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesAddress},'%')</if>
+			</if>
+			<if test="activityPrizesOffice != null and activityPrizesOffice != ''">
+				AND d.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesOffice}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesOffice}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesOffice},'%')</if>
+			</if>
+			<if test="cancelOffice != null and cancelOffice != ''">
+				AND e.name =#{cancelOffice} 
+			</if>
+			<if test="cancelNumber != null and cancelNumber != ''">
+				AND a.cancel_number =#{cancelNumber} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.create_date &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			<!-- <if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findListByState" parameterType="LocalCancel" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		<where>
+			check_state = 0
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityName},'%')</if>
+			</if>
+			<if test="activityPrizesId != null and activityPrizesId != ''">
+				AND a.activity_prizes_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesId},'%')</if>
+			</if>
+			<if test="activityPrizesAddress != null and activityPrizesAddress != ''">
+				AND b.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesAddress}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesAddress}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesAddress},'%')</if>
+			</if>
+			<if test="activityPrizesOffice != null and activityPrizesOffice != ''">
+				AND d.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{activityPrizesOffice}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{activityPrizesOffice}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{activityPrizesOffice},'%')</if>
+			</if>
+			<if test="cancelOffice != null and cancelOffice != ''">
+				AND e.name =#{cancelOffice} 
+			</if>
+			<if test="cancelNumber != null and cancelNumber != ''">
+				AND a.cancel_number =#{cancelNumber} 
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.create_date &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.create_date &lt;= #{endTime}
+			</if>
+			<!-- <if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="QueryLocalCancelUser" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		<where>
+			a.CANCEL_OFFICE = #{officeId} AND a.CHECK_STATE='0'
+		</where>
+	</select>
+	
+	<select id="QueryLocalByCancelUser" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		<where>
+			a.cancel_user = #{cancleUser} AND a.CHECK_STATE='0'
+		</where>
+	</select>
+	
+	<select id="findAllList" resultType="LocalCancel">
+		SELECT 
+			<include refid="localCancelColumns"/>
+		FROM local_cancel a
+		<include refid="localCancelJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO local_cancel(
+			id,
+			activity_name,
+			activity_prizes_address,
+			activity_prizes_id,
+			activity_id,
+			cancel_user,
+			cancel_address,
+			prize_name,
+			cancel_number,
+			activity_prizes_office,
+			cancel_office,
+			create_date,
+			cancel_openid,
+			check_state,
+			check_user,
+			activity_address,
+			cancel_addressname,
+			cancelusername,
+			canceluserphone
+		) VALUES (
+			#{id},
+			#{activityName},
+			#{activityPrizesAddress},
+			#{activityPrizesId},
+			#{activityId},
+			#{cancelUser},
+			#{cancelAddress},
+			#{prizeName},
+			#{cancelNumber},
+			#{activityPrizesOffice},
+			#{cancelOffice},
+			#{createDate},
+			#{cancelOpenid},
+			#{checkState},
+			#{checkUser},
+			#{activityAddress},
+			#{cancelAddressName},
+			#{cancelusername},
+			#{canceluserphone}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE local_cancel SET 	
+			<!-- activity_name = #{activityName},
+			activity_prizes_address = #{activityPrizesAddress},
+			activity_prizes_id = #{activityPrizesId},
+			activity_id = #{activityId},
+			cancel_user = #{cancelUser},
+			cancel_address = #{cancelAddress},
+			prize_name = #{prizeName},
+			cancel_number = #{cancelNumber},
+			activity_prizes_office = #{activityPrizesOffice},
+			cancel_office = #{cancelOffice},
+			cancel_openid = #{cancelOpenid}, -->
+			check_state = #{checkState}
+			<!-- check_user = #{checkUser} -->
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM local_cancel
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

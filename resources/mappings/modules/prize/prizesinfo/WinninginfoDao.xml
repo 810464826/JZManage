@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.prize.prizesinfo.dao.WinninginfoDao">
+    
+	<sql id="winninginfoColumns">
+		a.id AS "id",
+		c.lucky_draw AS "name",
+		a.winning_way AS "winningWay",
+		b.name AS "prizeName",
+		a.express_number AS "expressNumber",
+		a.express AS "express",
+		a.collect_address AS "collectAddress",
+		a.collect_user AS "collectUser",
+		a.collect_phone AS "collectPhone",
+		a.delivery_time AS "deliveryTime",
+		a.winning_time AS "winningTime",
+		a.distribution_status AS "distributionStatus",
+		a.openid AS "openid",
+		a.grain_gram AS "grainGram",
+		a.prize_status AS "prizeStatus",
+		a.prize_type AS "prizeType",
+		a.code_id AS "codeId",
+		a.code AS "code",
+		a.cardid AS "cardid",
+		a.address_status AS "addressStatus",
+		a.activity_id AS "activityId",
+		a.activity_username AS "activityUserName",
+		a.activity_area AS "activityArea"
+	</sql>
+	
+	<sql id="winninginfoJoins">
+	LEFT JOIN PRODUCT_INFO b ON b.id = a.prize_name
+	LEFT JOIN INTEGRAL_VIP c ON c.openid = a.openid
+	
+	</sql>
+    
+	<select id="get" resultType="Winninginfo">
+		SELECT 
+			<include refid="winninginfoColumns"/>
+		FROM winning_delivery a
+		<include refid="winninginfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Winninginfo">
+		SELECT 
+			<include refid="winninginfoColumns"/>
+		FROM winning_delivery a
+		<include refid="winninginfoJoins"/>
+		<where>
+			1 = 1 
+			<if test="name != null and name != ''">
+				AND c.lucky_draw LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.winning_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.winning_time &lt;= #{endTime}
+			</if>
+			<if test="winningWay != null and winningWay != ''">
+				AND a.winning_way = #{winningWay}
+			</if>
+			<if test="distributionStatus != null and distributionStatus != ''">
+				AND a.distribution_status = #{distributionStatus}
+			</if>
+			<if test="prizeName != null and prizeName != ''">
+				AND b.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{prizeName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{prizeName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{prizeName},'%')</if>
+			</if>
+			ORDER BY a.winning_time DESC
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				,${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Winninginfo">
+		SELECT 
+			<include refid="winninginfoColumns"/>
+		FROM winning_delivery a
+		<include refid="winninginfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO winning_delivery(
+			id,
+			name,
+			winning_way,
+			prize_name,
+			express_number,
+			express,
+			collect_address,
+			collect_user,
+			collect_phone,
+			delivery_time,
+			winning_time,
+			distribution_status,
+			openid,
+			grain_gram,
+			prize_status,
+			prize_type,
+			code_id,
+			code,
+			cardid,
+			address_status,
+			activity_id,
+			activity_username,
+			activity_area
+		) VALUES (
+			#{id},
+			#{name},
+			#{winningWay},
+			#{prizeName},
+			#{expressNumber},
+			#{express},
+			#{collectAddress},
+			#{collectUser},
+			#{collectPhone},
+			#{deliveryTime},
+			#{winningTime},
+			#{distributionStatus},
+			#{openid},
+			#{grainGram},
+			#{prizeStatus},
+			#{prizeType},
+			#{codeId},
+			#{code},
+			#{cardid},
+			#{addressStatus},
+			#{activityId},
+			#{activityUserName},
+			#{activityArea}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE winning_delivery SET 	
+			name = #{name},
+			winning_way = #{winningWay},
+			prize_name = #{prizeName},
+			express_number = #{expressNumber},
+			express = #{express},
+			collect_address = #{collectAddress},
+			collect_user = #{collectUser},
+			collect_phone = #{collectPhone},
+			delivery_time = #{deliveryTime},
+			winning_time = #{winningTime},
+			distribution_status = #{distributionStatus},
+			openid = #{openid},
+			grain_gram = #{grainGram},
+			prize_status = #{prizeStatus},
+			prize_type = #{prizeType},
+			code_id = #{codeId},
+			code = #{code},
+			cardid = #{cardid},
+			address_status = #{addressStatus},
+			activity_id=#{activityId},
+			activity_username=#{activityUserName},
+			activity_area=#{activityArea}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM winning_delivery
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

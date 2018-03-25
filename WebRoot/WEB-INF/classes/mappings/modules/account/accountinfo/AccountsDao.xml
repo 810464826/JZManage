@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.account.accountinfo.dao.AccountsDao">
+    
+	<sql id="accountsColumns">
+		a.id AS "id",
+		<!-- a.accounts_user_id AS "accountsUserId", -->
+		u2.NAME AS "accountsUserId",
+		<!-- a.accounts_distributor_id AS "accountsDistributorId", -->
+		u6.NAME AS "accountsDistributorId",
+		<!-- a.accounts_confirm_id AS "accountsConfirmId", -->
+		u4.NAME AS "accountsConfirmId",
+		<!-- a.accounts_confirm_distributor_i AS "accountsConfirmDistributorI", -->
+		u8.NAME AS "accountsConfirmDistributorI",
+		a.accounts_time AS "accountsTime",
+		a.state AS "state",
+		a.remarks AS "remarks",
+		a.activity_id AS "activityId",
+		a.prize_id AS "prizeId",
+		a.prize_name AS "prizeName",
+		a.cancel_number AS "cancelNumber",
+		a.cancel_id AS "cancelId",
+		a.accounts_subordinate AS "accountsSubordinate",
+		a.spare_one AS "spareOne",
+		a.spare_two AS "spareTwo",
+		a.selecttime AS "selecttime",
+		a.salesman AS "salesman",
+		a.salesname AS "salesname"
+	</sql>
+	
+	<sql id="accountsJoins">
+		LEFT JOIN sys_user u2 ON u2.id = a.accounts_user_id
+		LEFT JOIN sys_user u4 ON u4.id = a.accounts_confirm_id
+		LEFT JOIN sys_office u6 ON u6.id = a.accounts_distributor_id
+		LEFT JOIN sys_office u8 ON u8.id = a.accounts_confirm_distributor_i
+	</sql>
+    
+	<select id="get" resultType="Accounts">
+		SELECT 
+			<include refid="accountsColumns"/>
+		FROM accounts a
+		<include refid="accountsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Accounts">
+		SELECT 
+			<include refid="accountsColumns"/>
+		FROM accounts a
+		<include refid="accountsJoins"/>
+		<where>
+			<if test="accountsUserId != null and accountsUserId != ''">
+				AND a.accounts_user_id = #{accountsUserId}
+			</if>
+			<if test="accountsConfirmId != null and accountsConfirmId != ''">
+				AND a.accounts_confirm_id = #{accountsConfirmId}
+			</if>
+			<!-- <if test="accountsTime != null and accountsTime != ''">
+				AND a.accounts_time = #{accountsTime}
+			</if> -->
+			<if test="startTime != null and startTime != ''">
+				AND a.accounts_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.accounts_time &lt;= #{endTime}
+			</if>
+			<if test="state != null and state != ''">
+				AND a.state = #{state}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>	
+	
+	<insert id="insert">
+		INSERT INTO accounts(
+			id,
+			accounts_user_id,
+			accounts_distributor_id,
+			accounts_confirm_id,
+			accounts_confirm_distributor_i,
+			accounts_time,
+			state,
+			remarks,
+			activity_id,
+			prize_id,
+			prize_name,
+			cancel_number,
+			cancel_id,
+			accounts_subordinate,
+			selecttime,
+			salesman,
+			salesname
+		) VALUES (
+			#{id},
+			#{accountsUserId},
+			#{accountsDistributorId},
+			#{accountsConfirmId},
+			#{accountsConfirmDistributorI},
+			#{accountsTime},
+			#{state},
+			#{remarks},
+			#{activityId},
+			#{prizeId},
+			#{prizeName},
+			#{cancelNumber},
+			#{cancelId},
+			#{accountsSubordinate},
+			#{selecttime},
+			#{salesman},
+			#{salesname}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE accounts SET 	
+			accounts_user_id = #{accountsUserId},
+			accounts_distributor_id = #{accountsDistributorId},
+			accounts_confirm_id = #{accountsConfirmId},
+			accounts_confirm_distributor_i = #{accountsConfirmDistributorI},
+			accounts_time = #{accountsTime},
+			state = #{state},
+			remarks = #{remarks},
+			cancel_number = #{cancelNumber},
+			accounts_subordinate = #{accountsSubordinate},
+			selecttime=#{selecttime},
+			salesman=#{salesman},
+			salesname=#{salesname}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM accounts
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

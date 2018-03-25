@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.marketing.integralmall.dao.IntegralMallDao">
+    
+	<sql id="integralMallColumns">
+		a.ID AS "id",
+		b."NAME" AS "name",
+		a."EXCHANGE" AS "exchange",
+		a."RECOMMEND" AS "recommend",
+		a."TOTAL" AS "total",
+		a."REMAINING_QUANTIFY" AS "remainingQuantity",
+		a."PRIZE_TYPE" AS "prizeType",
+		c."NAME" AS "cardId"
+	</sql>
+	
+	<sql id="integralMallJoins">
+	LEFT JOIN PRODUCT_INFO b ON b.id = a.name
+	LEFT JOIN WX_CARD c ON c.id = a.CARD_ID
+	</sql>
+    
+	<select id="get" resultType="IntegralMall">
+		SELECT 
+			<include refid="integralMallColumns"/>
+		FROM integral_mall a
+		<include refid="integralMallJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="IntegralMall">
+		SELECT 
+			<include refid="integralMallColumns"/>
+		FROM integral_mall a
+		<include refid="integralMallJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND b."NAME" LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="exchange != null and exchange != ''">
+				AND a."EXCHANGE" = #{exchange}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="IntegralMall">
+		SELECT 
+			<include refid="integralMallColumns"/>
+		FROM integral_mall a
+		<include refid="integralMallJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO integral_mall(
+			"ID",
+			"NAME",
+			"EXCHANGE",
+			"RECOMMEND",
+			"TOTAL",
+			"REMAINING_QUANTIFY",
+			"PRIZE_TYPE",
+			"CARD_ID"
+		) VALUES (
+			#{id},
+			#{name},
+			#{exchange},
+			#{recommend},
+			#{total},
+			#{remainingQuantity},
+			#{prizeType},
+			#{cardId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE integral_mall SET 	
+			"NAME" = #{name},
+			"EXCHANGE" = #{exchange},
+			"RECOMMEND" = #{recommend},
+			"TOTAL" = #{total},
+			"REMAINING_QUANTIFY" = #{remainingQuantity},
+			"PRIZE_TYPE" = #{prizeType},
+			"CARD_ID" = #{cardId}
+		WHERE ID = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM integral_mall
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

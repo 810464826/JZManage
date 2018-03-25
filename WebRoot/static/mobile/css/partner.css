@@ -1,0 +1,268 @@
+*{
+	margin: 0px;
+	padding: 0px;
+}
+li{
+	list-style-type: none;
+}
+body{
+	background: url(../img/partner.png) center center;
+	background-repeat:no-repeat ;
+}
+#topMenu{
+	width: 100%;
+	height: 60px;
+	background: rgba(0,0,0,0.3);
+}
+#topMenu td{
+	height: 60px;
+	text-align: center;
+	color: white;
+	line-height: 60px;
+}
+#topMenu td:first-of-type{
+	width: 25%;
+	font-family: "微软雅黑";
+	font-size: 18px;
+}
+#topMenu td:nth-of-type(2){
+	width: 50%;
+	font-family: "楷体";
+	font-size: 20px;
+}
+#topMenu td:last-of-type{
+	width: 25%;
+	text-align: right;
+}
+#topMenu td:last-of-type>img{
+	width: 20px;
+	height: 15px;
+	vertical-align: middle;
+	margin-right: 20px;
+}
+#middle{
+	width: 100%;
+	height: 636px;
+	background: rgba(0,0,0,0.4);
+	padding-top: 40px;
+}
+#tabeleMid{
+	width: 100%;
+	height:400px;
+	text-align: center;
+}
+.pic1>img{
+	width: 100px;
+	height: 90px;
+	vertical-align: middle;
+}
+.pic2>img{
+	width: 110px;
+	height: 90px;
+	vertical-align: middle;
+}
+.pic3>img{
+	width: 110px;
+	height: 80px;
+	vertical-align: middle;
+}
+.pic4>img{
+	width: 70px;
+	height: 85px;
+	vertical-align: middle;
+}
+.pic5>img{
+	width: 100px;
+	height: 50px;
+	vertical-align: middle;
+}
+.pic6>img{
+	width: 120px;
+	height: 50px;
+	vertical-align: middle;
+}
+#middle>p{
+	text-align: center;
+	margin-top: 20px;
+}
+#demand{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgba(0,0,0,0.7);
+	display: none;
+}
+#demand>div{
+	width: 80%;
+	height: 80%;
+	margin: 20% 0px 0px 10%;
+	border-radius: 10px;
+	background: rgba(210,196,147,0.7);
+}
+#demand span{
+	margin-left: 89%;
+	display: inline-block;
+	margin-top: 15px;
+	cursor: pointer;
+}
+#demand p{
+	color: #444444;
+	font-family: "楷体";
+	font-size: 18px;
+	font-weight: 600;
+	margin-left: 15px;
+}
+#demand input{
+	font-family: "楷体";
+	font-size: 12px;
+	color: white;
+	width: 92%;
+	height: 34px;
+	background: rgba(194,194,194,0.2);
+	margin: 1% 0px 1% 4%;
+	outline: none;
+	border-style: none;
+	border-radius:5px ;
+}
+#demand textarea{
+	font-family: "楷体";
+	font-size: 12px;
+	color: white;
+	width: 92%;
+	height: 200px;
+	background: rgba(194,194,194,0.2);
+	margin: 1% 0px 1% 4%;
+	outline: none;
+	border-style:none ;
+	resize: none;
+	border-radius:5px;
+}
+#demand h3{
+	width: 200px;
+	text-align: center;
+	margin: auto;
+	cursor: pointer;
+	margin-top: 20px;
+}
+#demand h3>img{
+	width: 200px;
+	height: 20px;
+	vertical-align: middle;
+}
+#success{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background: rgba(0,0,0,0.7);
+	display: none;
+}
+#success>div{
+	width: 80%;
+	height: 80%;
+	margin: 20% 0px 0px 10%;
+	border-radius: 10px;
+	background: rgba(210,196,147,0.7);
+}
+#success span:first-of-type{
+	display: inline-block;
+	margin-top: 12px;
+	margin-left: 89%;
+	cursor: pointer;
+}
+#success span:last-of-type>img{
+	position: absolute;
+	top: 20%;
+	left: 50%;
+	margin-left: -41.5px;
+}
+#success h2{
+	width: 50%;
+	color: white;
+	font-size: 24px;
+	text-align: center;
+	margin: 45% auto 0px auto;
+	font-weight: 100;
+	font-family: "楷体";
+}
+#success p{
+	width: 85%;
+	color: white;
+	font-size: 18px;
+	line-height: 30px;
+	text-align: center;
+	margin: 10% auto 0px auto;
+	font-family: "楷体";
+}
+.sideslip{
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	width: 80%;
+	height: 100%;
+	margin-right: -80%;
+	transition: 0.7s;
+	background: rgba(5,6,8,0.7);
+}
+.show{
+	margin-right: 0;
+}
+#sideslip>span{
+	display: inline-block;
+	width: 100%;
+	height: 60px;
+	text-align: right;
+	line-height: 60px;
+}
+#sideslip>span>img{
+	width: 15px;
+	height: 15px;
+	vertical-align: middle;
+	margin-right: 22px;
+}
+#sideslip>ul{
+	width: 100%;
+	height:612px ;
+}
+#sideslip>ul>li{
+	color: #c2c2c2;
+	width: 90%;
+	height: 50px;
+	font-family: "楷体";
+	font-size: 18px;
+	line-height: 50px;
+	border-bottom: 1px solid #565252;
+	margin: auto;
+}
+#sideslip>ul>li:last-of-type a{
+	color:white;
+}
+#sideslip>ul>li>a{
+	color: #c2c2c2;
+	text-decoration: none;
+}
+#sideslip>ul>p{
+	width: 60%;
+	height: 32px;
+	line-height: 32px;
+	font-family:"楷体" ;
+	font-size: 16px;
+	margin: auto;
+	display: none;
+}
+#sideslip>ul>p>a{
+	color: #c2c2c2;
+	text-decoration: none;
+}
+#sideslip>ul>li:hover{
+	color: white;
+}
+#sideslip>ul>li>a:hover{
+	color: white;
+}
+#sideslip p>a:hover{
+	color:#ffd02e ;
+}

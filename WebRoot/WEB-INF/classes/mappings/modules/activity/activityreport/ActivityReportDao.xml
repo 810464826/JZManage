@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activity.activityreport.dao.ActivityReportDao">
+    
+	<sql id="activityReportColumns">
+		a.id AS "id",
+		a.activity_name AS "activityName",
+		a.activity_address AS "activityAddress",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		u6.name AS "applyUser",
+		u7.name AS "examineUser",
+		a.state AS "state",
+		a.applyofficeid AS "applyofficeid"
+	</sql>
+	
+	<sql id="activityReportJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.apply_user
+		LEFT JOIN sys_user u7 ON u7.id = a.examine_user
+	</sql>
+    
+	<select id="get" resultType="ActivityReport">
+		SELECT 
+			<include refid="activityReportColumns"/>
+		FROM activity_report a
+		<include refid="activityReportJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findListByApplyUser" resultType="ActivityReport">
+		SELECT 
+			<include refid="activityReportColumns"/>
+		FROM activity_report a
+		<include refid="activityReportJoins"/>
+		WHERE a.apply_user = #{userid}
+	</select>
+	
+	<select id="findList" resultType="ActivityReport">
+		SELECT 
+			<include refid="activityReportColumns"/>
+		FROM activity_report a
+		<include refid="activityReportJoins"/>
+		<where>
+			1=1 
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE
+				'%'||#{activityName}||'%'
+			</if>
+			<if test="activityAddress != null and activityAddress != ''">
+				AND a.activity_address LIKE
+				'%'||#{activityAddress}||'%'
+			</if>
+			AND a.apply_user = #{applyUser}
+			ORDER BY a.create_time DESC
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				 AND ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findReportByUserId" resultType="ActivityReport">
+		SELECT 
+			*
+		FROM activity_report a
+		<where>
+			a.applyUser=#{userId}
+		</where>		
+	</select>
+	
+	<select id="findListByOfficeId" resultType="ActivityReport">
+		SELECT 
+			*
+		FROM activity_report a
+		<where>
+			a.applyofficeid=#{officeid}
+		</where>		
+	</select>
+	
+	<select id="findAllList" resultType="ActivityReport">
+		SELECT 
+			<include refid="activityReportColumns"/>
+		FROM activity_report a
+		<include refid="activityReportJoins"/>
+		<where>
+			1=1 
+		</where>		
+		ORDER BY a.create_time DESC
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				AND ORDER BY ${page.orderBy}  
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO activity_report(
+			id,
+			activity_name,
+			activity_address,
+			create_time,
+			update_time,
+			apply_user,
+			examine_user,
+			state,
+			applyofficeid
+		) VALUES (
+			#{id},
+			#{activityName},
+			#{activityAddress},
+			#{createTime},
+			#{updateTime},
+			#{applyUser},
+			#{examineUser},
+			#{state},
+			#{applyofficeid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE activity_report SET 	
+			activity_name = #{activityName},
+			activity_address = #{activityAddress},
+			create_time = #{createTime},
+			update_time = #{updateTime},
+			apply_user = #{applyUser},
+			applyofficeid = #{applyofficeid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM activity_report
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

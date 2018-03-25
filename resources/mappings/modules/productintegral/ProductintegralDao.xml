@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.productintegral.dao.ProductintegralDao">
+    
+	<sql id="productintegralColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.volume AS "volume",
+		a.degree AS "degree",
+		a.spec AS "spec",
+		a.integreal AS "integreal"
+		<!-- a.spareone AS "spareone",
+		a.sparetwo AS "sparetwo" -->
+	</sql>
+	
+	<sql id="productintegralJoins">
+	</sql>
+    
+	<select id="get" resultType="Productintegral">
+		SELECT 
+			<include refid="productintegralColumns"/>
+		FROM productintegral a
+		<include refid="productintegralJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Productintegral">
+		SELECT 
+			<include refid="productintegralColumns"/>
+		FROM productintegral a
+		<include refid="productintegralJoins"/>
+		<where>
+			
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="volume != null and volume != ''">
+				AND a.volume = #{volume}
+			</if>
+			<if test="degree != null and degree != ''">
+				AND a.degree = #{degree}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND a.spec = #{spec}
+			</if>
+			<if test="integreal != null and integreal != ''">
+				AND a.integreal = #{integreal}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findProductByCondition" resultType="Productintegral">
+		SELECT 
+			<include refid="productintegralColumns"/>
+		FROM productintegral a
+		<include refid="productintegralJoins"/>
+		<where>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}	
+			</if>
+			<if test="volume != null and volume != ''">
+				AND a.volume = #{volume}
+			</if>
+			<if test="degree != null and degree != ''">
+				AND a.degree = #{degree}
+			</if>
+			<if test="spec != null and spec != ''">
+				AND a.spec = #{spec}
+			</if>
+			<if test="integreal != null and integreal != ''">
+				AND a.integreal = #{integreal}
+			</if>
+		</where>
+	</select>
+	
+	
+	<select id="findAllList" resultType="Productintegral">
+		SELECT 
+			<include refid="productintegralColumns"/>
+		FROM productintegral a
+		<include refid="productintegralJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO productintegral(
+			id,
+			name,
+			volume,
+			degree,
+			spec,
+			integreal
+		<!-- 	spareone,
+			sparetwo -->
+		) VALUES (
+			#{id},
+			#{name},
+			#{volume},
+			#{degree},
+			#{spec},
+			#{integreal}
+			<!-- #{spareone},
+			#{sparetwo} -->
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE productintegral SET 	
+			name = #{name},
+			volume = #{volume},
+			degree = #{degree},
+			spec = #{spec},
+			integreal = #{integreal}
+			<!-- spareone = #{spareone},
+			sparetwo = #{sparetwo} -->
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM productintegral
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

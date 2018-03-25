@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activity.signgoods.dao.SignGoodsDao">
+    
+	<sql id="signGoodsColumns">
+		a.goodsnumber AS "goodsNumber",
+		a.recordid AS "recordid",
+		u8.name AS "dealerName",
+		u6.name AS "varieties",
+		a.totalbox AS "totalBox",
+		a.createtime AS "createTime",
+		a.activityreportid AS "activityReportId",
+		a.id AS "id",
+		a.disreibutorid AS "disreibutorId",
+		a.state AS "state",
+		u6.productsize AS "poductsize",
+		a.goodsAddress AS "goodsAddress",
+		a.outtime AS "outTime"
+	</sql>
+	
+	<sql id="signGoodsColumnsList">
+		a.goodsnumber AS "goodsNumber",
+		a.recordid AS "recordid",
+		a.dealername AS "dealerName",
+		a.varieties AS "varieties",
+		a.totalbox AS "totalBox",
+		a.createtime AS "createTime",
+		a.activityreportid AS "activityReportId",
+		a.goodsAddress AS "goodsAddress",
+		a.id AS "id",
+		a.productsize AS "poductsize",
+		a.disreibutorid AS "disreibutorId",
+		a.state AS "state",
+		a.outtime AS "outTime"
+	</sql>
+	
+	
+	<sql id="signGoodsColumns2">
+		a.goodsnumber AS "goodsNumber",
+		a.recordid AS "recordid",
+		u8.name AS "dealerName",
+		u6.name AS "varieties",
+		a.totalbox AS "totalBox",
+		a.createtime AS "createTime",
+		a.activityreportid AS "activityReportId",
+		a.goodsAddress AS "goodsAddress",
+		a.id AS "id",
+		a.disreibutorid AS "disreibutorId",
+		a.state AS "state",
+		u6.productsize AS "poductsize",
+		a.outtime AS "outTime"
+		
+	</sql>
+	<sql id="signGoodsJoins2">
+	LEFT JOIN PRODUCT_INFO u6 ON u6.id = a.varieties
+	LEFT JOIN SYS_OFFICE u8 ON u8.id = a.dealername
+	</sql>
+	
+	<sql id="signGoodsJoins">
+	LEFT JOIN PRODUCT_INFO u6 ON u6.id = a.varieties
+	LEFT JOIN SYS_OFFICE u8 ON u8.id = a.dealername
+	</sql>
+    
+    <select id="SignGoodslist" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumns"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+			WHERE a.STATE = '3' AND a.ACTIVITYREPORTID = #{id} ORDER BY a.createtime DESC
+	</select>
+	
+	<select id="getSignGoodsByActivityId" resultType="SignGoods">
+		SELECT 
+			*
+		FROM sign_goods a
+			WHERE a.ACTIVITYREPORTID = #{activityReportId} ORDER BY a.createtime DESC
+	</select>
+	
+	<select id="SignGoodslistF" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumnsList"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+			WHERE a.STATE = '3' AND a.ACTIVITYREPORTID = #{id} ORDER BY a.createtime DESC
+	</select>
+    
+	<select id="get" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumns"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+		WHERE a.activityreportid = #{id}  
+	</select>
+	
+	<select id="findList" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumnsList"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins2"/>
+		<where>
+			a.STATE = '0' 
+			<if test="dealerName != null and dealerName != '' ">
+				AND a.dealername LIKE '%'||#{dealerName}||'%'
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.createtime &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.createtime &lt;= #{endTime}
+			</if>
+			<if test="goodsNumber != null and goodsNumber != ''">
+				AND a.goodsnumber LIKE 
+					<if test="dbName == 'oracle'">'%'||#{goodsNumber}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{goodsNumber}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{goodsNumber},'%')</if>
+			</if>
+			<if test="totalBox != null and totalBox != ''">
+				AND a.totalbox = #{totalBox}
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumns2"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins2"/>
+		<where>
+			a.STATE = '2' 
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="getSignGoods" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumns"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+			WHERE a.STATE = '0'  AND a.disreibutorid = #{id} AND a.activityreportid IS NULL ORDER BY a.createtime DESC
+	</select>
+	
+	<select id="getSignGoodsByOutNoAndState" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumnsList"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+			WHERE a.STATE = '0'  AND a.recordid = #{recordId} AND a.activityreportid IS NULL ORDER BY a.createtime DESC
+	</select>
+	
+	<select id="getSignGoodsAll" resultType="SignGoods">
+		SELECT 
+			<include refid="signGoodsColumns"/>
+		FROM sign_goods a
+		<include refid="signGoodsJoins"/>
+			WHERE a.STATE = '0' AND a.activityreportid IS NULL ORDER BY a.createtime DESC
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sign_goods(
+			id,
+			goodsnumber,
+			dealername,
+			varieties,
+			totalbox,
+			createtime,
+			activityreportid,
+			disreibutorid,
+			goodsaddress,
+			state,
+			productsize,
+			recordid ,
+			outtime 
+		) VALUES (
+			#{id},
+			#{goodsNumber},
+			#{dealerName},
+			#{varieties},
+			#{totalBox},
+			#{createTime},
+			#{activityReportId},
+			#{disreibutorId},
+			#{goodsAddress},
+			#{state},
+			#{poductsize},
+			#{recordId},
+			#{outTime}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sign_goods SET 	
+			goodsnumber = #{goodsNumber},
+			recordid = #{recordid},
+			dealername = #{dealerName},
+			varieties = #{varieties},
+			totalbox = #{totalBox},
+			createtime = #{createTime},
+			activityreportid = #{activityReportId},
+			driverid = #{driverId},
+			disreibutorid = #{disreibutorId},
+			productsize = #{poductsize},
+			state = #{state},
+			outtime=#{outTime}
+		WHERE id = #{id}
+	</update>
+	<update id="updateSign">
+		UPDATE sign_goods SET 	
+			activityreportid = #{activityReportId} 
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM sign_goods
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

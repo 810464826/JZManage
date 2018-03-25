@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activity.revokeaudit.dao.RevokeAuditDao">
+    
+	<sql id="revokeAuditColumns">
+		a.id AS "id",
+		a.activity_name AS "activityName",
+		a.activity_address AS "activityAddress",
+		a.create_time AS "createTime",
+		a.update_time AS "updateTime",
+		u6.name AS "applyUser",
+		u7.name AS "examineUser",
+		a.state AS "state"
+	</sql>
+	
+	<sql id="revokeAuditJoins">
+		LEFT JOIN sys_user u6 ON u6.id = a.apply_user
+		LEFT JOIN sys_user u7 ON u7.id = a.examine_user
+	</sql>
+    
+	<select id="get" resultType="RevokeAudit">
+		SELECT 
+			<include refid="revokeAuditColumns"/>
+		FROM activity_report a
+		<include refid="revokeAuditJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="RevokeAudit">
+		SELECT 
+			<include refid="revokeAuditColumns"/>
+		FROM activity_report a
+		<include refid="revokeAuditJoins"/>
+		<where>
+			1=1 
+			<if test="activityName != null and activityName != ''">
+				AND a.activity_name LIKE
+				'%'||#{activityName}||'%'
+			</if>
+			<if test="activityAddress != null and activityAddress != ''">
+				AND a.activity_address LIKE
+				'%'||#{activityAddress}||'%'
+			</if>
+			<if test="applyUser != null and applyUser != ''">
+				AND a.apply_user LIKE
+				'%'||#{applyUser}||'%'
+			</if>
+			AND a.state=1
+			ORDER BY a.create_time DESC
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="RevokeAudit">
+		SELECT 
+			<include refid="revokeAuditColumns"/>
+		FROM activity_report a
+		<include refid="revokeAuditJoins"/>
+		<where>
+			1=1
+			AND a.state=1
+			ORDER BY a.create_time DESC
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO activity_report(
+			id,
+			activity_name,
+			activity_address,
+			create_time,
+			update_time,
+			apply_user,
+			examine_user,
+			state
+		) VALUES (
+			#{id},
+			#{activityName},
+			#{activityAddress},
+			#{createTime},
+			#{updateTime},
+			#{applyUser},
+			#{examineUser},
+			#{state}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE activity_report SET 	
+			activity_name = #{activityName},
+			activity_address = #{activityAddress},
+			create_time = #{createTime},
+			update_time = #{updateTime},
+			apply_user = #{applyUser}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE activity_report SET 	
+			STATE = '4'
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

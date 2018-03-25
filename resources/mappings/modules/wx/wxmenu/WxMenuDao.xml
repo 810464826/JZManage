@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.wx.wxmenu.dao.WxMenuDao">
+    
+	<sql id="wxMenuColumns">
+		a.id AS "id",
+		a.menu_name AS "menuName",
+		a.menu_type AS "menuType",
+		a.event_link AS "eventLink",
+		a.generate AS "generate",
+		a.order AS "order",
+		a.parent_id AS "parent.id"
+	</sql>
+	
+	<sql id="wxMenuJoins">
+	</sql>
+    
+	<select id="get" resultType="WxMenu">
+		SELECT 
+			<include refid="wxMenuColumns"/>
+		FROM wx_menu a
+		<include refid="wxMenuJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="WxMenu">
+		SELECT 
+			<include refid="wxMenuColumns"/>
+		FROM wx_menu a
+		<include refid="wxMenuJoins"/>
+		<where>
+			
+			<if test="menuName != null and menuName != ''">
+				AND a.menu_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{menuName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{menuName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{menuName},'%')</if>
+			</if>
+			<if test="menuType != null and menuType != ''">
+				AND a.menu_type LIKE 
+					<if test="dbName == 'oracle'">'%'||#{menuType}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{menuType}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{menuType},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="WxMenu">
+		SELECT 
+			<include refid="wxMenuColumns"/>
+		FROM wx_menu a
+		<include refid="wxMenuJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO wx_menu(
+			id,
+			menu_name,
+			menu_type,
+			event_link,
+			generate,
+			order,
+			parent_id
+		) VALUES (
+			#{id},
+			#{menuName},
+			#{menuType},
+			#{eventLink},
+			#{generate},
+			#{order},
+			#{parent.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE wx_menu SET 	
+			menu_name = #{menuName},
+			menu_type = #{menuType},
+			event_link = #{eventLink},
+			generate = #{generate},
+			order = #{order}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM wx_menu
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

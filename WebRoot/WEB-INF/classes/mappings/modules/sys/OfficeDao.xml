@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.OfficeDao">
+
+	<sql id="officeColumns">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.area_id AS "area.id",
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.grade,
+		a.address, 
+		a.zip_code, 
+		a.master, 
+		a.phone, 
+		a.fax, 
+		a.email, 
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.useable AS useable,
+		a.primary_person AS "primaryPerson.id",
+		a.deputy_person AS "deputyPerson.id",
+		p.name AS "parent.name",
+		ar.name AS "area.name",
+		ar.parent_ids AS "area.parentIds",
+		pp.name AS "primaryPerson.name",
+		dp.name AS "deputyPerson.name",
+		a.coretype,
+		a.currentaddressname,
+		a.longitude,
+		a.latitude,
+		a.addressname,
+		a.roletype
+	</sql>
+	
+	<sql id="officeColumns1">
+		a.id,
+		a.parent_id AS "parent.id",
+		a.parent_ids,
+		a.area_id AS "area.id",
+		a.code,
+		a.name,
+		a.sort,
+		a.type,
+		a.grade,
+		a.address, 
+		a.zip_code, 
+		a.master, 
+		a.phone, 
+		a.fax, 
+		a.email, 
+		a.remarks,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.useable AS useable,
+		a.primary_person AS "primaryPerson.id",
+		a.deputy_person AS "deputyPerson.id",
+		a.coretype,
+		a.currentaddressname,
+		a.longitude,
+		a.latitude,
+		a.addressname,
+		a.roletype
+	</sql>
+	
+	<sql id="officeJoins">
+		LEFT JOIN sys_office p ON p.id = a.parent_id
+		LEFT JOIN sys_area ar ON ar.id = a.area_id
+		LEFT JOIN SYS_USER pp ON pp.id = a.primary_person
+		LEFT JOIN SYS_USER dp ON dp.id = a.deputy_person
+    </sql>
+	
+	<select id="officeByParent" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.PARENT_ID = #{parent} AND a.DEL_FLAG = '0'
+	</select>
+	
+	<select id="get" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="getOfficeByName" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.name = #{name}
+	</select>
+	
+	<select id="getAllOffice" resultType="Office">
+		SELECT
+			*
+		FROM sys_office a ORDER BY a.create_date desc
+	</select>
+	
+	<select id="getOfficeByParentId" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.parent_id = #{parentId}
+	</select>
+	
+	<select id="getOfficeById" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<!--查询门店  -->
+	<select id="getStoreByType" resultType="Office">
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type != '0'
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="type != null and type != ''">
+						AND a.type = #{type}
+					</if>
+					<if test="coretype != null and coretype != ''">
+						AND a.coretype = #{coretype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--查询当前门店所有的数量-->
+	<select id="getStoreByTypeCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type != '0'
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coretype != null and coretype != ''">
+				AND a.coretype = #{coretype}
+			</if>
+		</where>
+	</select>
+	
+	<!--查询当前门店所有的数量   根据officeid查询的   这是有节点的-->
+	<select id="getStoreByParentOfficeIdCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type != '0'
+			<if test="officeid != null and officeid != ''">
+						AND a.PARENT_IDS like '%'||#{officeid}||'%'
+					</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coretype != null and coretype != ''">
+				AND a.coretype = #{coretype}
+			</if>
+		</where>
+	</select>
+	
+	
+	<!--;这里是查询门店 根据officeID 有节点的 -->
+	<select id="getStoreByOfficeId" resultType="Office">
+		<!-- SELECT * FROM sys_office a where a.type !='0' and a.PARENT_IDS like '%'||#{officeid}||'%'  -->
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type != '0'
+					<if test="officeid != null and officeid != ''">
+						AND a.PARENT_IDS like '%'||#{officeid}||'%'
+					</if>
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="type != null and type != ''">
+						AND a.type = #{type}
+					</if>
+					<if test="coretype != null and coretype != ''">
+						AND a.coretype = #{coretype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--;  -->
+	<select id="getStoreByOfficeId1" resultType="Office">
+		SELECT * FROM sys_office a where a.type IS NOT null and a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+	</select>
+	
+	<!--;这里是查询门店 根据officeID  -->
+	<select id="getNoParentStoreByOfficeId" resultType="Office">
+		<!-- SELECT * FROM  a where a.type IS NOT null and a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}  -->
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type != '0'
+					<if test="officeid != null and officeid != ''">
+						AND a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+					</if>
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="type != null and type != ''">
+						AND a.type = #{type}
+					</if>
+					<if test="coretype != null and coretype != ''">
+						AND a.coretype = #{coretype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--查询当前门店所有的数量   根据officeid查询的   这是有节点的-->
+	<select id="getStoreByNoParentOfficeIdCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type != '0'
+			<if test="officeid != null and officeid != ''">
+				AND a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="coretype != null and coretype != ''">
+				AND a.coretype = #{coretype}
+			</if>
+		</where>
+	</select>
+	
+	<!--这是以前的渠道商officeID 父节点  -->
+	<select id="getOfficeByOfficeId" resultType="Office">
+		SELECT * FROM sys_office a where  a.PARENT_IDS like '%'||#{officeid}||'%' 
+	</select>
+	
+	<!--;这是现在的渠道商officeID 父节点  -->
+	<select id="getParentOfficeByOfficeId" resultType="Office">
+		<!-- SELECT * FROM  a where a.type IS NOT null and a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}  -->
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type = '0'
+					<!--officeid是dao里面传递过来的参数名称  -->
+					<if test="officeid != null and officeid != ''">
+						AND a.PARENT_IDS like '%'||#{officeid}||'%' 
+					</if>
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="roletype != null and roletype != ''">
+						AND a.roletype = #{roletype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--有节点的渠道商的用户的数量  -->
+	<select id="getOfficeParentOfficeIdCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type = '0'
+			<if test="officeid != null and officeid != ''">
+				AND a.PARENT_IDS like '%'||#{officeid}||'%' 
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="roletype != null and roletype != ''">
+				AND a.roletype = #{roletype}
+			</if>
+		</where>
+	</select>
+	
+	<!--;这是现在的渠道商officeID 没有父节点  -->
+	<select id="getNoParentOfficeByOfficeId" resultType="Office">
+		<!-- SELECT * FROM  a where a.type IS NOT null and a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}  -->
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type = '0'
+					<!--officeid是dao里面传递过来的参数名称  -->
+					<if test="officeid != null and officeid != ''">
+						AND a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+					</if>
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="roletype != null and roletype != ''">
+						AND a.roletype = #{roletype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--没有节点的渠道商的用户的数量  -->
+	<select id="getOfficeNoParentOfficeIdCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type = '0'
+			<if test="officeid != null and officeid != ''">
+				AND a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+			</if>
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="roletype != null and roletype != ''">
+				AND a.roletype = #{roletype}
+			</if>
+		</where>
+	</select>
+	
+	<!--这是以前的渠道商officeID 没有父节点  -->
+	<select id="getOfficeByOfficeId1" resultType="Office">
+		SELECT * FROM sys_office a where  a.PARENT_IDS like '%'||#{officeid}||'%' or a.id =#{officeid}
+	</select>
+	
+	
+	<select id="findList" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		<!-- 数据范围过滤 -->
+		${sqlMap.dsf}
+		OR a.id = #{currentUser.office.id}
+		ORDER BY a.code
+	</select>
+			
+	<select id="findAllList" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+		ORDER BY a.code
+	</select>
+	
+	<select id="findByParentIdsLike" resultType="Office">
+		SELECT
+			<include refid="officeColumns"/>
+		FROM sys_office a
+		<include refid="officeJoins"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL} AND a.parent_ids LIKE #{parentIds}
+		ORDER BY a.code
+	</select>
+	
+	<!--根据条件查询  -->
+	<!-- <select id="getOfficeByNameAndRole" resultType="Office">
+		SELECT * FROM sys_office a WHERE a.name = #{name} AND a.roletype=#{roletype}
+	</select> -->
+	
+	<!--根据条件查询  -->
+	<select id="getOfficeByNameAndType" resultType="Office">
+		SELECT * FROM sys_office a WHERE 1=1 
+		<if test="name != null and name != ''">
+			AND a.name = #{name} 
+		</if>
+		<if test="type != null and type != ''">	
+			AND a.type=#{type}
+		</if>
+		<if test="coretype != null and coretype != ''">
+			 AND a.coretype=#{coretype}
+		 </if>
+	</select>
+	
+	<select id="getOfficeByNameAndRole" resultType="Office">
+		SELECT * FROM sys_office a WHERE 1=1
+		<if test="name != null and name != ''">
+			 AND a.name = #{name}
+		</if>
+		<if test="roletype != null and roletype != ''">
+			 AND a.roletype = #{roletype}
+		</if>
+	</select>
+	
+	
+	<!--根据条件查询  -->
+	<select id="getOfficeByOfficeName" resultType="Office">
+		SELECT * FROM sys_office a WHERE a.name = #{name}
+	</select>
+	
+	<!--根据条件查询  -->
+	<select id="getOfficeByRoleType" resultType="Office">
+		SELECT * FROM sys_office a WHERE a.roletype=#{roletype}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_office(
+			id, 
+			parent_id, 
+			parent_ids, 
+			area_id, 
+			code, 
+			name, 
+			sort, 
+			type, 
+			grade, 
+			address, 
+			zip_code, 
+			master, 
+			phone, 
+			fax, 
+			email, 
+			create_by, 
+			create_date, 
+			update_by, 
+			update_date, 
+			remarks, 
+			del_flag,
+			useable,
+			primary_person,
+			longitude,
+			latitude,
+			currentaddressname,
+			coretype,
+			addressname,
+			deputy_person,
+			roletype
+		) VALUES (
+			#{id}, 
+			#{parent.id}, 
+			#{parentIds}, 
+			#{area.id}, 
+			#{code}, 
+			#{name}, 
+			#{sort}, 
+			#{type}, 
+			#{grade}, 
+			#{address}, 
+			#{zipCode}, 
+			#{master}, 
+			#{phone}, 
+			#{fax}, 
+			#{email}, 
+			#{createBy.id}, 
+			#{createDate}, 
+			#{updateBy.id}, 
+			#{updateDate}, 
+			#{remarks}, 
+			#{delFlag},
+			#{useable},
+			#{primaryPerson.id},
+			#{longitude},
+			#{latitude},
+			#{currentaddressname},
+			#{coretype},
+			#{addressname},
+			#{deputyPerson.id},
+			#{roletype}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_office SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}, 
+			area_id = #{area.id}, 
+			code = #{code}, 
+			name = #{name}, 
+			type = #{type}, 
+			grade = #{grade}, 
+			address = #{address}, 
+			zip_code = #{zipCode}, 
+			master = #{master}, 
+			phone = #{phone}, 
+			fax = #{fax}, 
+			email = #{email}, 
+			update_by = #{updateBy.id}, 
+			update_date = #{updateDate}, 
+			remarks = #{remarks},
+			useable=#{useable},
+			primary_person=#{primaryPerson.id},
+			longitude=#{longitude},
+			latitude=#{latitude},
+			currentaddressname=#{currentaddressname},
+			coretype=#{coretype},
+			addressname=#{addressname},
+			deputy_person=#{deputyPerson.id},
+			roletype=#{roletype}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="updateParentIds">
+		UPDATE sys_office SET 
+			parent_id = #{parent.id}, 
+			parent_ids = #{parentIds}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_office SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id} OR parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{id}||',%'</if>
+					<if test="dbName == 'mssql'">'%,'+#{id}+',%'</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{id}, ',%')</if>
+	</update>
+	
+	<update id="deleteOfficeById">
+		DELETE FROM sys_office
+		WHERE id = #{id}
+	</update>
+	
+	<!--获取渠道商信息 -->
+	<select id="getOfficeList" resultType="Office">
+		select * from (select a.*,rownum row_num from ( 
+	      	SELECT
+			<include refid="officeColumns"/>
+				FROM sys_office a
+			<include refid="officeJoins"/>
+				<where>
+					a.type = '0'
+					<if test="name != null and name != ''">
+						AND a.name = #{name}
+					</if>
+					<if test="roletype != null and roletype != ''">
+						AND a.roletype = #{roletype}
+					</if>
+				</where>
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--查询当前门店所有的数量-->
+	<select id="getOfficeListCount" resultType="Integer">
+		SELECT  count(*)  FROM sys_office a 
+		<where>
+			a.type = '0'
+			<if test="name != null and name != ''">
+				AND a.name = #{name}
+			</if>
+			<if test="roletype != null and roletype != ''">
+				AND a.roletype = #{roletype}
+			</if>
+		</where>
+	</select>
+	
+	
+</mapper>

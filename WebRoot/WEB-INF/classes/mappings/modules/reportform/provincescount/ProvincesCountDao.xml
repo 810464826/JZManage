@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.reportform.provincescount.dao.ProvincesCountDao">
+    
+	<sql id="provincesCountColumns">
+		a.id AS "id",
+		a.user_name AS "userName",
+		a.phone AS "phone",
+		a.country AS "country",
+		a.city AS "city",
+		a.province AS "province",
+		a.scan_time AS "scanTime",
+		a.openid AS "openid",
+		b.NAME AS "activityPrizesName",
+		c.NAME AS "activityPrizesAddress",
+		a.activity_prizes_id AS "activityPrizesId",
+		a.activity_id AS "activityId",
+		a.out_provinces AS "outProvinces",
+		a.codeid AS "codeid",
+		a.scan_number AS "scanNumber",
+		a.district AS "district",
+		a.road AS "road",
+		a.longitude AS "longitude",
+		a.latitude AS "latitude"
+	</sql>
+	
+	<sql id="provincesCountJoins">
+	LEFT JOIN SYS_OFFICE b ON b.ID = a.activity_prizes_name
+	LEFT JOIN SYS_AREA c ON c.ID = a.activity_prizes_address
+	</sql>
+    
+	<select id="get" resultType="ProvincesCount">
+		SELECT 
+			<include refid="provincesCountColumns"/>
+		FROM provinces_count a
+		<include refid="provincesCountJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProvincesCount">
+		SELECT 
+			<include refid="provincesCountColumns"/>
+		FROM provinces_count a
+		<include refid="provincesCountJoins"/>
+		<where>
+			1=1 
+			<if test="scanTime != null and scanTime != ''">
+				AND a.scan_time = #{scanTime}
+			</if>
+			<if test="activityId != null and activityId != ''">
+				AND a.activity_id = #{activityId}
+			</if>
+			<if test="activityPrizesName != null and activityPrizesName != ''">
+				AND b.NAME LIKE '%'||#{activityPrizesName}||'%' 
+			</if>
+			<if test="activityPrizesAddress != null and activityPrizesAddress != ''">
+				AND c.NAME LIKE '%'||#{activityPrizesAddress}||'%'  
+			</if>
+			<!-- AND a.out_provinces = '1'  -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProvincesCount">
+		SELECT 
+			<include refid="provincesCountColumns"/>
+		FROM provinces_count a
+		<include refid="provincesCountJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO provinces_count(
+			id,
+			user_name,
+			phone,
+			country,
+			city,
+			province,
+			scan_time,
+			openid,
+			activity_prizes_name,
+			activity_prizes_address,
+			activity_prizes_id,
+			activity_id,
+			out_provinces,
+			codeid,
+			scan_number,
+			district,
+			road,
+			longitude,
+			latitude
+		) VALUES (
+			#{id},
+			#{userName},
+			#{phone},
+			#{country},
+			#{city},
+			#{province},
+			#{scanTime},
+			#{openid},
+			#{activityPrizesName},
+			#{activityPrizesAddress},
+			#{activityPrizesId},
+			#{activityId},
+			#{outProvinces},
+			#{codeid},
+			#{scanNumber},
+			#{district},
+			#{road},
+			#{longitude},
+			#{latitude}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE provinces_count SET 	
+			user_name = #{userName},
+			phone = #{phone},
+			country = #{country},
+			city = #{city},
+			province = #{province},
+			scan_time = #{scanTime},
+			openid = #{openid},
+			activity_prizes_name = #{activityPrizesName},
+			activity_prizes_address = #{activityPrizesAddress},
+			activity_prizes_id = #{activityPrizesId},
+			activity_id = #{activityId},
+			out_provinces = #{outProvinces},
+			codeid = #{codeid},
+			scan_number = #{scanNumber},
+			district = #{district},
+			road = #{road},
+			longitude = #{longitude},
+			latitude = #{latitude}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM provinces_count
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

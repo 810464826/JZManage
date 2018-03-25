@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.logistics.logisticsdriver.dao.LogisticsDriverDao">
+    
+	<sql id="logisticsDriverColumns">
+		a.id AS "id",
+		a.driver_name AS "driverName",
+		a.phone AS "phone",
+		a.create_date AS "createDate",
+		a.truck_id AS "truckId"
+	</sql>
+	
+	<sql id="logisticsDriverJoins">
+	</sql>
+    
+	<select id="get" resultType="LogisticsDriver">
+		SELECT 
+			<include refid="logisticsDriverColumns"/>
+		FROM logistics_driver a
+		<include refid="logisticsDriverJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="LogisticsDriver">
+		SELECT 
+			<include refid="logisticsDriverColumns"/>
+		FROM logistics_driver a
+		<include refid="logisticsDriverJoins"/>
+		<where>
+			
+			<if test="driverName != null and driverName != ''">
+				AND a.driver_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{driverName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{driverName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{driverName},'%')</if>
+			</if>
+			<if test="truckId != null and phone != ''">
+				AND a.truck_id LIKE 
+					<if test="dbName == 'oracle'">'%'||#{truckId}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{truckId}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{truckId},'%')</if>
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone LIKE 
+					<if test="dbName == 'oracle'">'%'||#{phone}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{phone}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{phone},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="LogisticsDriver">
+		SELECT 
+			<include refid="logisticsDriverColumns"/>
+		FROM logistics_driver a
+		<include refid="logisticsDriverJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO logistics_driver(
+			id,
+			driver_name,
+			phone,
+			create_date,
+			truck_id
+		) VALUES (
+			#{id},
+			#{driverName},
+			#{phone},
+			#{createDate},
+			#{truckId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE logistics_driver SET 	
+			driver_name = #{driverName},
+			phone = #{phone}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM logistics_driver
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activityorder.dao.ActivityorderDao">
+    
+	<sql id="activityorderColumns">
+		a.id AS "id",
+		a.activityid AS "activityid",
+		a.orderid AS "orderid",
+		a.state AS "state",
+		a.recordid AS "recordid"
+	</sql>
+	
+	<sql id="activityorderJoins">
+	</sql>
+    
+    <!--这是根据活动id查询所有的活动相关的运单  -->
+	<select id="findActivityOrder" resultType="Activityorder">
+		SELECT 
+			<include refid="activityorderColumns"/>
+		FROM activityorder a
+		<include refid="activityorderJoins"/>
+		WHERE a.activityid = #{activityid} 
+	</select>
+
+	<!--这是根据活动id查询所有的活动相关的运单  -->
+	<select id="findActivityOrderRecordIdByState" resultType="Activityorder">
+		SELECT 
+			<include refid="activityorderColumns"/>
+		FROM activityorder a
+		<include refid="activityorderJoins"/> 
+		WHERE a.activityid = #{activityid}  AND a.state='1'
+	</select>
+
+	<select id="get" resultType="Activityorder">
+		SELECT 
+			<include refid="activityorderColumns"/>
+		FROM activityorder a
+		<include refid="activityorderJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Activityorder">
+		SELECT 
+			<include refid="activityorderColumns"/>
+		FROM activityorder a
+		<include refid="activityorderJoins"/>
+		<where>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Activityorder">
+		SELECT 
+			<include refid="activityorderColumns"/>
+		FROM activityorder a
+		<include refid="activityorderJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO activityorder(
+			id,
+			activityid,
+			orderid,
+			state,
+			recordid
+		) VALUES (
+			#{id},
+			#{activityid},
+			#{orderid},
+			#{state},
+			#{recordid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE activityorder SET 	
+			activityid = #{activityid},
+			orderid = #{orderid},
+			state = #{state},
+			recordid=#{recordid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM activityorder
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteActivity">
+		DELETE FROM activityorder
+		WHERE activityid = #{activityid}
+	</update>
+
+</mapper>

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.salesman.dao.SalesmanDao">
+    
+	<sql id="salesmanColumns">
+		a.id AS "id",
+		a.officeid AS "officeid",
+		a.name AS "name",
+		a.phone AS "phone",
+		a.remakes AS "remakes",
+		a.officename AS "officename",
+		a.manangeofficeid AS "manangeofficeid",
+		c.name AS "manangeofficename",
+		a.userid AS "userId"
+	</sql>
+	
+	<sql id="salesmanJoins">
+		LEFT JOIN sys_office c ON c.id = a.manangeofficeid
+	</sql>
+    
+	<select id="get" resultType="Salesman">
+		SELECT 
+			<include refid="salesmanColumns"/>
+		FROM salesman a
+		<include refid="salesmanJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findSalesManByOfficeId" resultType="Salesman">
+		SELECT 
+			<include refid="salesmanColumns"/>
+		FROM salesman a
+		<include refid="salesmanJoins"/>
+		WHERE a.officeid = #{officeId}
+	</select>
+	
+	<!--1 通过手机 -->
+	<select id="findSalesManByPhone" resultType="Salesman">
+		SELECT 
+			<include refid="salesmanColumns"/>
+		FROM salesman a
+		<include refid="salesmanJoins"/>
+			WHERE a.phone = #{phone} 
+			<!-- AND a.name = #{name} -->
+	</select>
+	
+	<!--2 通过手机和管理的店来查询  -->
+	<select id="findSalesManByPhoneManageOffice" resultType="Salesman">
+		SELECT 
+			*
+		FROM salesman a
+		
+		<where>
+			1=1
+			<if test="phone != null and phone != ''">
+				AND a.phone =#{phone}
+			</if>
+			<if test="manangeofficeid != null and manangeofficeid != ''">
+				AND a.manangeofficeid =#{manangeofficeid}
+			</if>
+		</where>
+	</select>
+	
+	<select id="findList" resultType="Salesman">
+		SELECT 
+			<include refid="salesmanColumns"/>
+		FROM salesman a
+		<include refid="salesmanJoins"/>
+		<where>
+			1=1
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			
+			<if test="officeid != null and officeid != ''">
+				AND a.officeid  = #{officeid}
+			</if>
+			
+			<if test="officename != null and officename != ''">
+				AND a.officename  = #{officename}
+			</if>
+			
+			<if test="manangeofficename != null and manangeofficename != ''">
+				AND c.name LIKE
+				<if test="dbName == 'oracle'">'%'||#{manangeofficename}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{manangeofficename}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{manangeofficename},'%')</if>
+			</if>
+			
+			<!-- <if test="officeid != null and officeid != ''">
+				AND (c.id = #{officeid} OR c.parent_ids LIKE 
+					<if test="dbName == 'oracle'">'%,'||#{officeid}||',%')</if>
+					<if test="dbName == 'mssql'">'%,'+#{officeid}+',%')</if>
+					<if test="dbName == 'mysql'">CONCAT('%,', #{officeid}, ',%'))</if>
+			</if> -->
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Salesman">
+		SELECT 
+			<include refid="salesmanColumns"/>
+		FROM salesman a
+		<include refid="salesmanJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO salesman(
+			id,
+			officeid,
+			name,
+			phone,
+			remakes,
+			officename,
+			manangeofficeid,
+			manangeofficename,
+			userid
+		) VALUES (
+			#{id},
+			#{officeid},
+			#{name},
+			#{phone},
+			#{remakes},
+			#{officename},
+			#{manangeofficeid},
+			#{manangeofficename},
+			#{userId}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE salesman SET 	
+			officeid = #{officeid},
+			name = #{name},
+			phone = #{phone},
+			remakes = #{remakes},
+			officename=#{officename},
+			manangeofficeid=#{manangeofficeid},
+			manangeofficename=#{manangeofficename},
+			userid=#{userId}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM salesman
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteSalesManByOfficeId">
+		DELETE FROM salesman
+		WHERE officeid = #{officeId}
+	</update>
+</mapper>

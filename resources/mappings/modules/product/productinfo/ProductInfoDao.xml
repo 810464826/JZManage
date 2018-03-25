@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.product.productinfo.dao.ProductInfoDao">
+    
+	<sql id="productInfoColumns">
+		a.ID AS "id",
+		a."NAME" AS "name",
+		a."NUMBER" AS "number",
+		a.IMGID AS "imgid",
+		a."TYPE" AS "type",
+		a.CREATE_TIME AS "createTime",
+		a.UPDATE_TIME AS "updateTime",
+		a.PRICE AS "price",
+		a.UNIT AS "unit",
+		a.ALCOHOLIC AS "alcoholic",
+		a.PRODUCTSIZE AS "productsize",
+		a.CAPACITY AS "capacity",
+		a.DESCRIPTION AS "description",
+		a.CARD_ID AS "cardId",
+		a.REMARK AS "remark",
+		a.STATUS AS "status"
+	</sql>
+	
+	<sql id="productInfoColumns1">
+		a.NAME AS "name",
+		a.NUMBER AS "number",
+		a.TYPE AS "type",
+		a.PRICE AS "price",
+		a.UNIT AS "unit",
+		a.ALCOHOLIC AS "alcoholic",
+		a.PRODUCTSIZE AS "productsize",
+		a.CAPACITY AS "capacity",
+		a.DESCRIPTION AS "description",
+		a.REMARK AS "remark",
+		a.STATUS AS "status"
+	</sql>
+	
+	<sql id="productInfoJoins">
+	</sql>
+    
+	<select id="get" resultType="ProductInfo">
+		SELECT 
+			<include refid="productInfoColumns"/>
+		FROM product_info a
+		<include refid="productInfoJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ProductInfo">
+		SELECT 
+			<include refid="productInfoColumns"/>
+		FROM product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			<if test="type != null and type != ''">
+				AND a.type = #{type}
+			</if>
+			<if test="name != null and name != ''">
+				AND a."NAME" LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="number != null and number != ''">
+				AND a."NUMBER" LIKE 
+					<if test="dbName == 'oracle'">'%'||#{number}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{number}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{number},'%')</if>
+			</if>
+			<if test="price != null and price != ''">
+				AND a.PRICE LIKE 
+					<if test="dbName == 'oracle'">'%'||#{price}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{price}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{price},'%')</if>
+			</if>
+			<if test="unit != null and unit != ''">
+				AND a.UNIT LIKE 
+					<if test="dbName == 'oracle'">'%'||#{unit}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{unit}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{unit},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ProductInfo">
+		SELECT 
+			<include refid="productInfoColumns"/>
+		FROM product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 查询所有卡券商品 -->
+	<select id="getProductBytype" resultType="ProductInfo">
+		SELECT 
+			<include refid="productInfoColumns"/>
+		FROM product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			a.TYPE=#{type} AND a.STATUS = '1'
+		</where>
+	</select>
+	
+	<!-- 根据产品编号查询商品 -->
+	<select id="getProductByNumber" resultType="ProductInfo">
+		SELECT 
+			<include refid="productInfoColumns"/>
+		FROM product_info a
+		<include refid="productInfoJoins"/>
+		<where>
+			a."NUMBER"=#{number}
+		</where>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO product_info(
+			ID,
+			"NAME",
+			"NUMBER",
+			IMGID,
+			"TYPE",
+			CREATE_TIME,
+			UPDATE_TIME,
+			PRICE,
+			UNIT,
+			ALCOHOLIC,
+			PRODUCTSIZE,
+			CAPACITY,
+			DESCRIPTION,
+			CARD_ID,
+			REMARK,
+			STATUS
+		) VALUES (
+			#{id},
+			#{name},
+			#{number},
+			#{imgid},
+			#{type},
+			#{createTime},
+			#{updateTime},
+			#{price},
+			#{unit},
+			#{alcoholic},
+			#{productsize},
+			#{capacity},
+			#{description},
+			#{cardId},
+			#{remark},
+			#{status}
+		)
+	</insert>
+	
+	
+	<insert id="savePro">
+		INSERT INTO product_info(
+			ID,
+			"NAME",
+			"NUMBER",
+			"TYPE",
+			PRICE,
+			UNIT,
+			ALCOHOLIC,
+			PRODUCTSIZE,
+			CAPACITY,
+			DESCRIPTION,
+			REMARK,
+			STATUS
+		) VALUES (
+			#{id},
+			#{name},
+			#{number},
+			#{type},
+			#{price},
+			#{unit},
+			#{alcoholic},
+			#{productsize},
+			#{capacity},
+			#{description},
+			#{remark},
+			#{status}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE product_info SET 	
+			"NAME" = #{name},
+			"NUMBER" = #{number},
+			IMGID = #{imgid},
+			"TYPE" = #{type},
+			CREATE_TIME = #{createTime},
+			UPDATE_TIME = #{updateTime},
+			PRICE = #{price},
+			UNIT = #{unit},
+			ALCOHOLIC = #{alcoholic},
+			PRODUCTSIZE = #{productsize},
+			CAPACITY = #{capacity},
+			DESCRIPTION = #{description},
+			CARD_ID = #{cardId},
+			REMARK = #{remark},
+			STATUS = #{status}
+		WHERE ID = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM product_info
+		WHERE ID = #{id}
+	</update>
+	
+</mapper>

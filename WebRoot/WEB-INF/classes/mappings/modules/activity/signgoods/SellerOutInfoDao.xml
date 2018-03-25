@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.activity.signgoods.dao.SellerOutInfoDao">
+    <!--根据手机号查询全部  -->
+	<!-- <select id="getRecsellercodeByOutNumber" resultType="SellerOutInfo">
+		SELECT a.outno ,a.sellername,a.recsellername,a.degree,a.recordid,
+		a.spec,a.volume,a.productname,a.brandsname,a.activesign,
+		count(boxcode) as boxcode,min(a.outdate) as  outdate FROM 
+		PLSDBFLAT.tb_SELLEROUTINFO a WHERE OUTTYPE = '出库' 
+		AND RECSELLERPHONE = #{phone} AND ACTIVESIGN='0'
+		group by a.outno, a.sellername,a.recsellername,a.degree,a.recordid,a.spec,a.volume,
+		a.productname,a.brandsname,a.activesign order  by  outdate desc ,outno
+	</select> -->
+	<!--根据手机号查询全部   分页 -->
+	<select id="getRecsellercodeByOutNumber" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      		SELECT a.outno ,a.sellername,a.recsellername,a.degree,a.recordid,
+				a.spec,a.volume,a.productname,a.brandsname,a.activesign,
+				count(boxcode) as boxcode,min(a.outdate) as  outdate FROM 
+				PLSDBFLAT.tb_SELLEROUTINFO a WHERE OUTTYPE = '出库' 
+				AND RECSELLERPHONE = #{phone} AND ACTIVESIGN='0'
+				group by a.outno, a.sellername,a.recsellername,a.degree,a.recordid,a.spec,a.volume,
+				a.productname,a.brandsname,a.activesign order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	<!--admin查询全部  -->
+	<!-- <select id="getRecsellercodeAdmin" resultType="SellerOutInfo">
+		SELECT a.outno ,a.sellername,a.recsellername,a.degree,a.recordId,
+		a.spec,a.volume,a.productname,a.brandsname,a.activesign,
+		count(boxcode) as boxcode,min(a.outdate) as  outdate FROM 
+		PLSDBFLAT.tb_SELLEROUTINFO a WHERE OUTTYPE = '出库' AND ACTIVESIGN='0'
+		group by a.outno, a.sellername,a.recsellername,a.degree,a.recordId,a.spec,a.volume,
+		a.productname,a.brandsname,a.activesign order  by  outdate desc ,outno
+	</select> -->
+	
+	
+	<!--admin查询全部    分页-->
+	<select id="getRecsellercodeAdmin" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      		SELECT a.outno ,a.sellername,a.recsellername,a.degree,a.recordId,
+				a.spec,a.volume,a.productname,a.brandsname,a.activesign,
+				count(boxcode) as boxcode,min(a.outdate) as  outdate FROM 
+				PLSDBFLAT.tb_SELLEROUTINFO a WHERE OUTTYPE = '出库' AND ACTIVESIGN='0'
+				group by a.outno, a.sellername,a.recsellername,a.degree,a.recordId,a.spec,a.volume,
+				a.productname,a.brandsname,a.activesign order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<select id="getOrderByRecordId" resultType="SellerOutInfo">
+		SELECT a.outno  as "outNo",a.recordid as "recordId",  a.sellername as "sellerName",a.recsellername as "recsellerName",a.degree as "degree",
+		a.spec as "spec",a.volume as "volume",a.productname as "productName",a.brandsname as "brandsName",
+		count(boxcode) as boxCode,min(a.outdate) as  outDate FROM 
+		PLSDBFLAT.tb_SELLEROUTINFO a WHERE recordid = #{recordId} AND  OUTTYPE = '出库' 
+		group by a.outno,a.recordId, a.sellername,a.recsellername,a.degree,a.spec,a.volume,
+		a.productname,a.brandsname order  by  outdate desc ,outno
+	</select>
+	
+		<!-- select t.outno, t.productname, count(boxcode) as boxcount,t.recsellername,min(t.outdate) as  outdate
+		   from plsdbflat.tb_selleroutinfo t
+		   where t.outno = 'CK-100693aj0001-20170908-0007'
+		   and t.recsellername = '湖南株洲易达酒业营销有限公司'
+		   and t.outdate>=to_date('2017-01-01','yyyy-mm-dd')
+		   and t.outdate<=to_date('2017-12-01','yyyy-mm-dd')
+		   group by  t.outno, t.productname,t.recsellername -->
+		   
+		<!--select t.RECORDID, t.outno, t.productname,t.recsellername,min(t.outdate) as  outdate
+		   from plsdbflat.tb_selleroutinfo t
+		   where t.outno = 'CK-100693aj0001-20170908-0007'
+		   and t.recsellername = '湖南株洲易达酒业营销有限公司'
+		   and t.outdate>=to_date('2017-01-01','yyyy-mm-dd')
+		   and t.outdate<=to_date('2017-12-01','yyyy-mm-dd')
+		   group by  t.RECORDID,t.outno, t.productname,t.recsellername,t.outdate  -->
+	
+	<!--普通用户的查询 根据手机号码查自己的  -->
+	<select id="getSellerOutInfoByConditionByPhone" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      	select t.recordid, t.outno, t.productname, count(boxcode) as boxcount,t.recsellername,min(t.outdate) as  outdate
+	 		from plsdbflat.tb_selleroutinfo t
+	 	<where>
+			1=1 
+			<if test="outNo != null and outNo != '' ">
+				AND t.outno like #{outNo}
+			</if>
+			<if test="phone != null and phone != '' ">
+				AND t.recsellerphone = #{phone}
+			</if>
+			<if test="sellerName != null and sellerName != ''">
+				AND t.recsellername like #{sellerName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND t.outdate &gt;=to_date(#{startTime},'yyyy-mm-dd')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.outdate &lt;=to_date(#{endTime},'yyyy-mm-dd')
+			</if>
+		</where>
+	   	group by t.recordid, t.outno, t.productname,t.recsellername,t.outdate 
+	   	order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--管理员查询不需要电话号码  管理员查询1-->
+	<select id="getSellerOutInfoByCondition" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      	select t.recordid, t.outno, t.productname, count(boxcode) as boxcount,t.recsellername,min(t.outdate) as  outdate
+	 		from plsdbflat.tb_selleroutinfo t
+	 	<where>
+			1=1 
+			<if test="outNo != null and outNo != '' ">
+				AND t.outno like #{outNo}
+			</if>
+			<if test="sellerName != null and sellerName != ''">
+				AND t.recsellername like #{sellerName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND t.outdate &gt;=to_date(#{startTime},'yyyy-mm-dd')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.outdate &lt;=to_date(#{endTime},'yyyy-mm-dd')
+			</if>
+		</where>
+	   	group by t.recordid, t.outno, t.productname,t.recsellername,t.outdate 
+	   	order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!-- 更新运单的标识在活动中-->
+	<update id="updateSellerInfoOn">
+		update PLSDBFLAT.tb_SELLEROUTINFO f set f.activesign='1'  where f.recordid=#{recordId}
+	</update>
+	
+	<!-- 更新运单的标识不在活动中-->
+	<update id="updateSellerInfoOut">
+		update PLSDBFLAT.tb_SELLEROUTINFO f set f.activesign='0'  where f.recordid=#{recordId}
+	</update>
+	
+	<!--获取所有的页数   当前登录人 这里是查询的时候   查询带1-->
+	<select id="getSellInfoCountByPhoneSearch" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO t 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+			<if test="outNo != null and outNo != '' ">
+				AND t.outno like #{outNo}
+			</if>
+			<if test="phone != null and phone != '' ">
+				AND t.recsellerphone = #{phone}
+			</if>
+			<if test="sellerName != null and sellerName != ''">
+				AND t.recsellername like #{sellerName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND t.outdate &gt;=to_date(#{startTime},'yyyy-mm-dd')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.outdate &lt;=to_date(#{endTime},'yyyy-mm-dd')
+			</if>
+		</where>
+	</select>
+	
+	<!--获取所有的页数   当前登录人  -->
+	<select id="getSellInfoCountByPhone" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO a 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+			<if test="phone != null and phone != '' ">
+				AND t.recsellerphone = #{phone}
+			</if>
+		</where>
+	</select>
+	<!--获取所有的页数  这里是查询的时候  管理员  所有跟查询有关的都有1-->
+	<select id="getAllSellInfoCountSearch" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO t 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+			<if test="outNo != null and outNo != '' ">
+				AND t.outno like #{outNo}
+			</if>
+			<if test="sellerName != null and sellerName != ''">
+				AND t.recsellername like #{sellerName}
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND t.outdate &gt;=to_date(#{startTime},'yyyy-mm-dd')
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND t.outdate &lt;=to_date(#{endTime},'yyyy-mm-dd')
+			</if>
+		</where>
+	</select>
+	
+	<!--获取所有的页数  不是查询时候-->
+	<select id="getAllSellInfoCount" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO a 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+		</where>
+	</select>
+	
+	<!--通过产品名称查询运单号  管理员-->
+	<select id="getSellerOutInfoByProductName" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      	select t.recordid, t.outno, t.productname,t.spec, count(boxcode) as boxcount,t.recsellername,min(t.outdate) as  outdate
+	 		from plsdbflat.tb_selleroutinfo t
+	 	<where>
+			ACTIVESIGN='0'
+			<if test="productname != null and productname != ''">
+				AND t.productname like #{productname}
+			</if>
+		</where>
+	   	group by t.recordid, t.outno, t.productname,t.spec,t.recsellername,t.outdate 
+	   	order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--这里是获取总数据条数的  管理员-->
+	<select id="getSellerCountByProductName" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO t 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+			<if test="productname != null and productname != ''">
+				AND t.productname like #{productname}
+			</if>
+		</where>
+	</select>
+	
+	<!--通过产品名称查询运单号  普通登陆者-->
+	<select id="getSellerOutInfoByProductNamePhone" resultType="SellerOutInfo">
+		select * from (select a.*,rownum row_num from ( 
+	      	select t.recordid, t.outno, t.productname,t.spec, count(boxcode) as boxcount,t.recsellername,min(t.outdate) as  outdate
+	 		from plsdbflat.tb_selleroutinfo t
+	 	<where>
+			ACTIVESIGN='0'
+			<if test="phone != null and phone != ''">
+				AND t.recsellerphone = #{phone}
+			</if>
+			<if test="productname != null and productname != ''">
+				AND t.productname like #{productname}
+			</if>
+		</where>
+	   	group by t.recordid, t.outno, t.productname,t.spec,t.recsellername,t.outdate 
+	   	order  by  outdate desc ,outno
+     			) a
+	  		) b 
+		where b.row_num between #{startLine} and #{endLine}
+	</select>
+	
+	<!--这里是获取总数据条数的  管理员-->
+	<select id="getSellerCountByProductNamePhone" resultType="Integer">
+		SELECT  count(*)  FROM PLSDBFLAT.tb_SELLEROUTINFO t 
+		<where>
+			OUTTYPE = '出库'  AND ACTIVESIGN='0'
+			<if test="productname != null and productname != ''">
+				AND t.productname like #{productname}
+			</if>
+			<if test="phone != null and phone != ''">
+				AND t.recsellerphone = #{phone}
+			</if>
+		</where>
+	</select>
+</mapper>

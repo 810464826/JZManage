@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.exportuser.dao.ExportuserDao">
+    
+	<sql id="exportuserColumns">
+		a.id AS "id",
+		a.companyallname AS "companyallname",
+		a.companyaddress AS "companyaddress",
+		a.caddress AS "caddress",
+		a.name AS "name",
+		a.phone AS "phone",
+		a.parentcompany AS "parentcompany",
+		a.usertype AS "usertype",
+		a.remakes AS "remakes",
+		a.userid AS "userid"
+	</sql>
+	
+	<sql id="exportuserJoins">
+	</sql>
+    
+	<select id="get" resultType="Exportuser">
+		SELECT 
+			<include refid="exportuserColumns"/>
+		FROM exportuser a
+		<include refid="exportuserJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Exportuser">
+		SELECT 
+			<include refid="exportuserColumns"/>
+		FROM exportuser a
+		<include refid="exportuserJoins"/>
+		<where>
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Exportuser">
+		SELECT 
+			<include refid="exportuserColumns"/>
+		FROM exportuser a
+		<include refid="exportuserJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findUserByUserId" resultType="Exportuser">
+		SELECT 
+			<include refid="exportuserColumns"/>
+		FROM exportuser a
+		<include refid="exportuserJoins"/>
+		<where>
+			a.userid=#{userid}
+		</where>		
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO exportuser(
+			id,
+			companyallname,
+			companyaddress,
+			caddress,
+			name,
+			phone,
+			parentcompany,
+			usertype,
+			remakes,
+			userid
+		) VALUES (
+			#{id},
+			#{companyallname},
+			#{companyaddress},
+			#{caddress},
+			#{name},
+			#{phone},
+			#{parentcompany},
+			#{usertype},
+			#{remakes},
+			#{userid}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE exportuser SET 	
+			companyallname = #{companyallname},
+			companyaddress = #{companyaddress},
+			caddress = #{caddress},
+			name = #{name},
+			phone = #{phone},
+			parentcompany = #{parentcompany},
+			usertype = #{usertype},
+			remakes = #{remakes},
+			userid=#{userid}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM exportuser
+		WHERE id = #{id}
+	</update>
+	
+	<update id="deleteExportuserByPhone">
+		DELETE FROM exportuser
+		WHERE phone = #{phone}
+	</update>
+	
+	<update id="deleteExportuserByUserId">
+		DELETE FROM exportuser
+		WHERE userid = #{userid}
+	</update>
+	
+</mapper>
